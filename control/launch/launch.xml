@@ -1,0 +1,40 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ##################### Path Control Module (PCM) - ARAV ##################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+
+<launch>
+
+	<!-- Parameters -->
+	
+	<arg name = "gain" default = "3.0"/> 
+	<arg name = "margin" default = "0.2"/> 
+	<arg name = "limit" default = "5.0"/> 
+	<arg name = "velocity" default = "0.3"/>
+	<arg name = "updateRate" default = "5"/> 
+	<arg name = "robotName" default = "ARAV"/>
+		
+	<!-- ARAV Path Control node -->
+	
+	<group ns = "$(arg robotName)">
+		
+		<node name = "PathControlModule" pkg = "control" type = "control.py" output = "screen" 
+		args = "$(arg gain) $(arg margin) $(arg limit) $(arg velocity) $(arg updateRate)"/>
+		
+	</group>
+			
+</launch>
+	
+<!-- ############################################################################ 
+     ##################### Path Control Module (PCM) - ARAV ##################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     

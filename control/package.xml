@@ -1,0 +1,50 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ##################### Path Control Module (PCM) - ARAV ##################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
+<package format = "2">
+
+  <name>control</name>
+  <version>1.0.0</version>
+  <description>The path control module of ARAV</description>
+  <maintainer email = "alberto.ceballos-gonzalez@student.isae-supaero.fr">Alberto Ceballos</maintainer>
+  <license>(c) Copyright 2022. Alberto Ceballos. All Rights Reserved</license>
+  <url type = "repository">https://github.com/alberto-ceballos/ARAV.git</url>
+  <author email = "alberto.ceballos-gonzalez@student.isae-supaero.fr">Alberto Ceballos</author>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>gazebo_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>rospy</build_depend>
+  
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>gazebo_msgs</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>tf</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>gazebo_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  
+</package>
+
+<!-- ############################################################################ 
+     ##################### Path Control Module (PCM) - ARAV ##################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
