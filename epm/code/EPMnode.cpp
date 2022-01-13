@@ -4,7 +4,7 @@
    ----------------------------------------------------------------------------
    -------------------- Author : Alberto Ceballos Gonzalez -------------------- 
    -------- E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr -------- 
-   --------- (c) Copyright 2021. Alberto Ceballos. All Rights Reserved --------  
+   --------- (c) Copyright 2022. Alberto Ceballos. All Rights Reserved --------  
    ---------------------------------------------------------------------------- */
 
 /* Import required libraries */
@@ -64,6 +64,7 @@ static const int HEIGHT = 720;	/* This line can be modified */
 /* Constants */
 
 static const float PI = 3.14159;
+static const int FINAL_FRAME = 5;
 
 /* Listener Class definition */
 
@@ -926,6 +927,8 @@ int main (int argc, char** argv) {
 	
 	/* Main loop */
 	
+	int currentFrame = 1;
+	
 	while (ros::ok ()) {
 	
 		start_time = clock ();
@@ -1018,6 +1021,21 @@ int main (int argc, char** argv) {
 			
 			pub_mode.publish (mode_msg);
 			
+			/* Stop the node */
+			
+			if (currentFrame >= FINAL_FRAME) {
+			
+				std::cout << "[Depth-Vision] Final Frame Processed >> Killing node" << std::endl;
+				break;
+			
+			}
+			
+			else {
+			
+				currentFrame++;
+			
+			}
+			
 		}
 		
 		catch (cv::Exception& e) {
@@ -1054,6 +1072,6 @@ int main (int argc, char** argv) {
    ----------------------------------------------------------------------------
    -------------------- Author : Alberto Ceballos Gonzalez -------------------- 
    -------- E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr -------- 
-   --------- (c) Copyright 2021. Alberto Ceballos. All Rights Reserved --------  
+   --------- (c) Copyright 2022. Alberto Ceballos. All Rights Reserved --------  
    ---------------------------------------------------------------------------- */
    

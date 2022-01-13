@@ -177,8 +177,8 @@ while not rospy.is_shutdown():
 	# Stop the node #
 	
 	if (currentFrame >= FINAL_FRAME):
-		break
 		print ("[AI-Filter] Final Frame Processed >> Killing node")
+		break
 	else:
 		currentFrame += 1
 	
@@ -225,6 +225,6 @@ while not rospy.is_shutdown():
     ----------------------------------------------------------------------------
     -------------------- Author : Alberto Ceballos Gonzalez -------------------- 
     -------- E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr -------- 
-    ---------- (c) Copyright 2021 Alberto Ceballos All Rights Reserved ---------  
+    ---------- (c) Copyright 2022 Alberto Ceballos All Rights Reserved ---------  
     ---------------------------------------------------------------------------- """
     
