@@ -5,7 +5,7 @@
     ----------------------------------------------------------------------------
     -------------------- Author : Alberto Ceballos Gonzalez -------------------- 
     -------- E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr -------- 
-    ---------- (c) Copyright 2021 Alberto Ceballos All Rights Reserved ---------  
+    ---------- (c) Copyright 2022 Alberto Ceballos All Rights Reserved ---------  
     ---------------------------------------------------------------------------- """
 
 # Environment Configuration --> Hide TF Warnings #
@@ -72,6 +72,7 @@ else:
 # Constants #
 
 THRESHOLD = 0.5			# This line can be modified #
+FINAL_FRAME = 5			# This line can be modified #
 UPDATE_RATE = float (sys.argv[4]) 	# Hz #
 
 # Image Size --> HD 720p #
@@ -133,6 +134,8 @@ print ("[AI-Filter] Inference model has been successfully loaded")
 
 init_time = time.time()
 
+currentFrame = 1 
+
 # Main loop #
 
 while not rospy.is_shutdown():
@@ -170,6 +173,14 @@ while not rospy.is_shutdown():
 	# Publish data #
 	
 	pub.publish(output_msg)
+	
+	# Stop the node #
+	
+	if (currentFrame >= FINAL_FRAME):
+		break
+		print ("[AI-Filter] Final Frame Processed >> Killing node")
+	else:
+		currentFrame += 1
 	
 	# Display Output #
 	
