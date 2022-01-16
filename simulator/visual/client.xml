@@ -15,7 +15,7 @@
 	<arg name = "directory" default = "$(find simulator)"/>
 	<arg name = "robotName" default = "ARAV"/>
 	<arg name = "save" default = "false"/>
-	<arg name = "updateRate" default = "60"/>
+	<arg name = "updateRate" default = "10"/>
 
 	<!-- ARAV Gazebo client node -->
 

@@ -38,7 +38,7 @@ for letter in sys.argv[1]:
 
 # Input topic #
 
-INPUT_TOPIC = "/ARAV/sensors/visualCamera/image";
+INPUT_TOPIC = "/arav/sensors/visualCamera/image";
 
 # Script modes #
 
@@ -104,14 +104,17 @@ init_time = time.time()
 while not rospy.is_shutdown():
 
     # Load Frame #
-	frame = listener.image
+    frame = listener.image
 
     # Display #
-    #cv2.imshow("ARAV Simulator", frame)
-    cv2.waitKey(15)
+    cv2.imshow("ARAV Simulator", frame)
+    cv2.waitKey(1)
 
     # Save #
-    cv2.imwrite(SAVE_PATH + "/output_" + str(time.time()-init_time)[:4] + "_segs.png", frame)
+
+    if save:
+
+        cv2.imwrite(SAVE_PATH + "/output_" + str(time.time()-init_time)[:4] + "_segs.png", frame)
 
     # Wait until next iteration #
     rate.sleep ()

@@ -1,62 +1,67 @@
 <?xml version = "1.0"?>
 
-<!-- ############################################################################ 
-     ###################### Self-Driving Simulator - ARAV ####################### 
+<!-- ############################################################################
+     ###################### Self-Driving Simulator - ARAV #######################
      ############################################################################
-     #################### Author : Alberto Ceballos Gonzalez #################### 
-     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
-     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     #################### Author : Alberto Ceballos Gonzalez ####################
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ########
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########
      ############################################################################ -->
-     
+
 <!-- ############################################################################
 
      This document launch the simulation:
-     
-     	1. Parameters
-     	2. Initial conditions
-     	3. Launch world and insert model
-     	
+
+      1. Add other files >> Gazebo client
+      2. Parameters
+     	3. Initial conditions
+     	4. Launch world and insert model
+
      ############################################################################ -->
-     
+
 <launch>
 
-	<!-- 1. PARAMETERS -->
-	
+  <!-- 1. INCLUDE OTHER FILES -->
+
+  <include file="$(find simulator)/visual/client.xml"/>
+
+	<!-- 2. PARAMETERS -->
+
 	<arg name = "robotName" default = "arav"/>
 	<arg name = "worldName" default = "none"/>
-	<arg name = "enableGUI" default = "true"/>
-	
-	<!-- 2. INITIAL CONDITIONS -->
-	
+	<arg name = "enableGUI" default = "false"/>
+
+	<!-- 3. INITIAL CONDITIONS -->
+
 	<arg name = "x0" default = "0.0"/>
 	<arg name = "y0" default = "0.0"/>
 	<arg name = "z0" default = "0.1"/>
 	<arg name = "roll0" default = "0.0"/>
 	<arg name = "pitch0" default = "0.0"/>
 	<arg name = "yaw0" default = "3.14159"/>
-	
-	<!-- 3. LAUNCH SIMULATION -->
-	
+
+	<!-- 4. LAUNCH SIMULATION -->
+
 	<group ns = "$(arg robotName)">
-	
-		<!-- 3.1 World -->
-		
+
+		<!-- 4.1 World -->
+
 		<include file = "$(find gazebo_ros)/launch/empty_world.launch">
-		
+
       			<arg name = "world_name" value = "$(find simulator)/worlds/$(arg worldName).world"/>
 			<arg name="gui" default="$(arg enableGUI)"/>
-			
+
     		</include>
-    		
-    		<!-- 3.2 Model -->
-    		
+
+    		<!-- 4.2 Model -->
+
     		<param name = "robot_description" command = "$(find xacro)/xacro $(find simulator)/model/main.xml"/>
-    		
+
     		<node name = "spawn_model" pkg = "gazebo_ros" type = "spawn_model" args = "
-    		
+
     			-urdf
     			-param robot_description
-    			-model arav 
+    			-model arav
     			-gazebo_namespace /$(arg robotName)/gazebo
                        -x $(arg x0)
                        -y $(arg y0)
@@ -64,32 +69,32 @@
                        -R $(arg roll0)
                        -P $(arg pitch0)
                        -Y $(arg yaw0)
-                       
+
 		"/>
-		
-		<!-- 3.3 Control -->
-		
+
+		<!-- 4.3 Control -->
+
 		<rosparam file = "$(find simulator)/control/params.yaml" command = "load" ns = "/$(arg robotName)"/>
-		
+
 		<node name = "robot_state_publisher" pkg = "robot_state_publisher" type = "robot_state_publisher">
 			<param name = "robot_description" command = "$(find xacro)/xacro $(find simulator)/model/main.xml"/>
 		</node>
-		
+
 		<node name = "control_spawner" pkg = "controller_manager" type = "spawner" args = "
-		
+
 			--namespace=/$(arg robotName)
 			joint_state_controller
-			joint_motor_controller 
+			joint_motor_controller
 		"/>
-    		
+
 	</group>
 
 </launch>
 
-<!-- ############################################################################ 
-     ###################### Self-Driving Simulator - ARAV ####################### 
+<!-- ############################################################################
+     ###################### Self-Driving Simulator - ARAV #######################
      ############################################################################
-     #################### Author : Alberto Ceballos Gonzalez #################### 
-     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
-     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     #################### Author : Alberto Ceballos Gonzalez ####################
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ########
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########
      ############################################################################ -->
