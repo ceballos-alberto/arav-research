@@ -18,12 +18,12 @@
 			<inertial>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 			      	<mass value="0.000001"/>
-			      	<xacro:NullInertia/>
+			      	<xacro:nullInertia/>
 			</inertial>
 		</link>
 		
 		<joint name="${JointName}" type="fixed"> 
-			<parent link="GroundCore"/>
+			<parent link="frame_link"/>
 			<child link="${LinkName}"/>
 			<axis xyz="0 0 0"/>
 			<origin xyz="${CamXoffset} ${CamYoffset} ${CamZoffset}" rpy="0 0 ${CamYawAngle}"/>
@@ -104,12 +104,12 @@
 			<inertial>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 			      	<mass value="0.000001"/>
-			      	<xacro:NullInertia/>
+			      	<xacro:nullInertia/>
 			</inertial>
 		</link>
 		
 		<joint name="${JointName}" type="fixed"> 
-			<parent link="GroundCore"/>
+			<parent link="frame_link"/>
 			<child link="${LinkName}"/>
 			<axis xyz="0 0 0"/>
 			<origin xyz="${UltraXoffset} ${UltraYoffset} 0" rpy="0 0 ${UltraYawAngle}"/>
@@ -152,7 +152,7 @@
 	<xacro:ultrasonic
 		LinkName="frontUltrasonic"
 		JointName="FrontUltrasonic2GroundCore"
-		UltraXoffset="${-GroundCoreX/2}"
+		UltraXoffset="${-UltraXoffset}"
 		UltraYoffset="0.0"
 		UltraYawAngle="${degrees180}"
 		UltraUpdateRate="${UltraUpdateRate}"
@@ -168,8 +168,8 @@
 	<xacro:ultrasonic
 		LinkName="leftUltrasonic"
 		JointName="LeftUltrasonic2GroundCore"
-		UltraXoffset="${-GroundCoreX/2}"
-		UltraYoffset="${-GroundCoreY/2}"
+		UltraXoffset="${-UltraXoffset}"
+		UltraYoffset="${-UltraYoffset}"
 		UltraYawAngle="${degrees180-degrees90/3}"
 		UltraUpdateRate="${UltraUpdateRate}"
 		samples="${samples}"
@@ -184,8 +184,8 @@
 	<xacro:ultrasonic
 		LinkName="rightUltrasonic"
 		JointName="RightUltrasonic2GroundCore"
-		UltraXoffset="${-GroundCoreX/2}"
-		UltraYoffset="${GroundCoreY/2}"
+		UltraXoffset="${-UltraXoffset}"
+		UltraYoffset="${UltraYoffset}"
 		UltraYawAngle="${degrees180+degrees90/3}"
 		UltraUpdateRate="${UltraUpdateRate}"
 		samples="${samples}"

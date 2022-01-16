@@ -12,7 +12,7 @@
 
      This document contains important macros to help with model definition:
      	
-     	1. Inertia macros (cylinder + box)
+     	1. Inertia macros (cylinder + box + null)
      	2. Frame macro
      	3. Wheel macro
      	4. Motor macro
@@ -52,6 +52,23 @@
 			iyy = "${mass*(xDim*xDim+zDim*zDim)/12}"
 			iyz = "0.0"
 			izz = "${mass*(xDim*xDim+yDim*yDim)/12}"
+			
+		/>
+		
+	</xacro:macro>
+		
+	<!-- 1.3 Null inertia -->
+	
+	<xacro:macro name = "nullInertia">
+	
+		<inertia
+		
+			ixx = "0.000001"
+			ixy = "0.0"
+			ixz = "0.0"
+			iyy = "0.000001"
+			iyz = "0.0"
+			izz = "0.000001"
 			
 		/>
 		

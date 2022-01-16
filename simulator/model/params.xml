@@ -66,6 +66,7 @@
 	<xacro:property name = "degrees30" value = "0.523599"/>
 	<xacro:property name = "degrees45" value = "0.785398"/>
 	<xacro:property name = "degrees90" value = "${degrees45*2}"/>
+	<xacro:property name = "degrees180" value = "${degrees45*4}"/>
 	
 	<!-- 6. CONTROL -->
 	
@@ -106,6 +107,8 @@
 	<xacro:property name="UltraMinRange" value="0.02"/>
 	<xacro:property name="UltraMaxRange" value="6"/>
 	<xacro:property name="UltraResolution" value="0.03"/>
+	<xacro:property name="UltraXoffset" value="0.13"/>
+	<xacro:property name="UltraYoffset" value="0.075"/>
 	
 </robot>
 

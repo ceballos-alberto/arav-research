@@ -33,7 +33,7 @@
 	<arg name = "z0" default = "0.1"/>
 	<arg name = "roll0" default = "0.0"/>
 	<arg name = "pitch0" default = "0.0"/>
-	<arg name = "yaw0" default = "0.0"/>
+	<arg name = "yaw0" default = "3.14159"/>
 	
 	<!-- 3. LAUNCH SIMULATION -->
 	
