@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!-- ############################################################################ 
+     ##################### Stereo Camera Calibration - ARAV ##################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+
+<launch>
+
+	<!-- Parameters -->
+
+	<arg name="Calib-DIR" default="$(find calib)"/>
+	<arg name="display" default="true"/>
+	<arg name="save" default="true"/>
+	<arg name="updateRate" default="0.4"/>
+	<arg name="robotName" default="ARAV"/>
+	
+	<!-- ARAV Environment Perception calibration nodes -->
+	
+	<group ns="$(arg robotName)">
+	
+		<node name="calibration" pkg="calib" type="cameraCalibration" output="screen" 
+		args="$(arg Calib-DIR) $(arg display) $(arg save) $(arg updateRate)"/>
+	
+	</group>
+                		
+</launch>
+	
+<!-- ############################################################################ 
+     ##################### Stereo Camera Calibration - ARAV ##################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
