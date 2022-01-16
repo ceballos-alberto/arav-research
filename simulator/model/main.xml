@@ -1,0 +1,188 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
+<!-- ############################################################################
+
+     This document contains the general description of the vehicle:
+     
+     	1. Include other documents:
+     		- macros
+     		- parameters
+     		- control
+     		- aerodynamics
+     		- sensors
+     	2. Robot definition (frame + wheels + motors)
+     	
+     ############################################################################ -->
+     
+<robot name = "arav" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+
+	<!-- 1. INCLUDE FILES -->
+
+	<xacro:include filename="$(find simulator)/model/macros.xml"/>
+	<xacro:include filename="$(find simulator)/model/params.xml"/>
+	<xacro:include filename="$(find simulator)/model/control.xml"/>
+	<xacro:include filename="$(find simulator)/model/flight.xml"/>
+	<xacro:include filename="$(find simulator)/model/sensors.xml"/>
+	
+	<!-- 2. ROBOT DEFINITION -->
+	
+	<!-- Robot = base + frame + 4 wheels + 4 motors -->
+	
+	<link name="base_link"/>
+	
+	<!-- 2.1 Frame -->
+	
+	<xacro:frame 
+	
+	mass = "${frame_mass}"
+	xDim = "${frame_xDim}"
+	yDim = "${frame_yDim}"
+	zDim = "${frame_zDim}"
+		
+	/>
+	
+	<!-- 2.2 Wheels -->
+	
+	<xacro:wheel
+	
+	id = "rightFront"
+	mass = "${wheel_mass}"
+	radius = "${wheel_radius}"
+	length = "${wheel_length}"
+	x = "${wheel_x}"
+	y = "${-wheel_y}"
+	z = "${wheel_z}"
+	maxEffort = "${wheel_maxEffort}"
+	maxVelocity = "${wheel_maxVelocity}"
+	reflect="1"
+		
+	/>
+	
+	<xacro:wheel
+	
+	id = "leftFront"
+	mass = "${wheel_mass}"
+	radius = "${wheel_radius}"
+	length = "${wheel_length}"
+	x = "${wheel_x}"
+	y = "${wheel_y}"
+	z = "${wheel_z}"
+	maxEffort = "${wheel_maxEffort}"
+	maxVelocity = "${wheel_maxVelocity}"
+	reflect="-1"
+		
+	/>
+	
+	<xacro:wheel
+	
+	id = "rightRear"
+	mass = "${wheel_mass}"
+	radius = "${wheel_radius}"
+	length = "${wheel_length}"
+	x = "${-wheel_x}"
+	y = "${-wheel_y}"
+	z = "${wheel_z}"
+	maxEffort = "${wheel_maxEffort}"
+	maxVelocity = "${wheel_maxVelocity}"
+	reflect="1"
+		
+	/>
+	
+	<xacro:wheel
+	
+	id = "leftRear"
+	mass = "${wheel_mass}"
+	radius = "${wheel_radius}"
+	length = "${wheel_length}"
+	x = "${-wheel_x}"
+	y = "${wheel_y}"
+	z = "${wheel_z}"
+	maxEffort = "${wheel_maxEffort}"
+	maxVelocity = "${wheel_maxVelocity}"
+	reflect="-1"
+		
+	/>
+	
+	<!-- 2.3 Motors -->
+	
+	<xacro:motor
+	
+	id = "rightFront"
+	mass = "${motor_mass}"
+	radius = "${motor_radius}"
+	length = "${motor_length}"
+	size = "${motor_size}"
+	x = "${motor_x}"
+	y = "${-motor_y}"
+	z = "${motor_z}"
+	maxEffort = "${motor_maxEffort}"
+	maxVelocity = "${motor_maxVelocity}"
+	reflect="-1"
+		
+	/>
+	
+	<xacro:motor
+	
+	id = "leftFront"
+	mass = "${motor_mass}"
+	radius = "${motor_radius}"
+	length = "${motor_length}"
+	size = "${motor_size}"
+	x = "${motor_x}"
+	y = "${motor_y}"
+	z = "${motor_z}"
+	maxEffort = "${motor_maxEffort}"
+	maxVelocity = "${motor_maxVelocity}"
+	reflect="1"
+		
+	/>
+	
+	<xacro:motor
+	
+	id = "rightRear"
+	mass = "${motor_mass}"
+	radius = "${motor_radius}"
+	length = "${motor_length}"
+	size = "${motor_size}"
+	x = "${-motor_x}"
+	y = "${-motor_y}"
+	z = "${motor_z}"
+	maxEffort = "${motor_maxEffort}"
+	maxVelocity = "${motor_maxVelocity}"
+	reflect="1"
+		
+	/>
+	
+	<xacro:motor
+	
+	id = "leftRear"
+	mass = "${motor_mass}"
+	radius = "${motor_radius}"
+	length = "${motor_length}"
+	size = "${motor_size}"
+	x = "${-motor_x}"
+	y = "${motor_y}"
+	z = "${motor_z}"
+	maxEffort = "${motor_maxEffort}"
+	maxVelocity = "${motor_maxVelocity}"
+	reflect="-1"
+		
+	/>
+	
+</robot>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->

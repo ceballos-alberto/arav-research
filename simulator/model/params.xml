@@ -1,0 +1,118 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
+<!-- ############################################################################
+
+     This document contains important parameters to help with model definition:
+     	
+     	1. Frame parameters
+     	2. Wheel parameters
+     	3. Motor parameters
+     	4. General dynamics
+     	5. Angles
+     	6. Control
+     	7. Aerodynamics
+     	8. Cameras
+     	9. Ultrasonic Sensors
+     	
+     ############################################################################ -->
+
+<robot name = "arav" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+
+	<!-- 1. FRAME -->
+	
+	<xacro:property name = "frame_mass" value = "0.5"/>		
+	<xacro:property name = "frame_xDim" value = "0.18"/>	
+	<xacro:property name = "frame_yDim" value = "0.11"/>
+	<xacro:property name = "frame_zDim" value = "0.02"/>
+	
+	<!-- 2. WHEELS -->
+	
+	<xacro:property name = "wheel_mass" value = "0.005"/>
+	<xacro:property name = "wheel_radius" value = "0.05"/>
+	<xacro:property name = "wheel_length" value = "0.05"/>
+	<xacro:property name = "wheel_x" value = "0.07"/>
+	<xacro:property name = "wheel_y" value = "0.05"/>
+	<xacro:property name = "wheel_z" value = "-0.05"/>
+	<xacro:property name = "wheel_maxEffort" value = "50"/>
+	<xacro:property name = "wheel_maxVelocity" value = "50"/>
+	
+	<!-- 3. MOTORS -->
+	
+	<xacro:property name = "motor_mass" value = "0.005"/>
+	<xacro:property name = "motor_radius" value = "0.02"/>
+	<xacro:property name = "motor_length" value = "0.05"/>
+	<xacro:property name = "motor_size" value = "0.15"/>
+	<xacro:property name = "motor_x" value = "0.2"/>
+	<xacro:property name = "motor_y" value = "0.2"/>
+	<xacro:property name = "motor_z" value = "0"/>
+	<xacro:property name = "motor_maxEffort" value = "5000"/>
+	<xacro:property name = "motor_maxVelocity" value = "5000"/>
+	
+	<!-- 4. GENERAL DYNAMICS -->
+	
+	<xacro:property name = "damping" value = "0.1"/>
+	<xacro:property name = "friction" value = "0.1"/>
+	
+	<!-- 5. ANGLES -->
+	
+	<xacro:property name = "degrees30" value = "0.523599"/>
+	<xacro:property name = "degrees45" value = "0.785398"/>
+	<xacro:property name = "degrees90" value = "${degrees45*2}"/>
+	
+	<!-- 6. CONTROL -->
+	
+	<xacro:property name = "controller_updateRate" value = "100"/>
+	<xacro:property name = "controller_covariance" value = "0.0001"/>
+	
+	<!-- 7. AERODYNAMICS -->
+	
+	<xacro:property name = "air_density" value = "1.225"/>
+	<xacro:property name = "area" value = "2"/>
+	<xacro:property name = "a0" value = "0.1"/>
+	<xacro:property name = "cla" value = "0.1"/>
+	<xacro:property name = "cda" value = "0.01"/>
+	<xacro:property name = "cma" value = "0.0"/>
+	<xacro:property name = "alpha_stall" value = "0.2"/>
+	<xacro:property name = "cla_stall" value = "-0.2"/>
+	<xacro:property name = "cda_stall" value = "1.0"/>
+	<xacro:property name = "cma_stall" value = "0.0"/>
+	
+	<!-- 8. CAMERAS -->
+	
+	<xacro:property name="CamDistance" value="0.1"/>
+	<xacro:property name="CamUpdateRate" value="0.4"/>
+	<xacro:property name="CamWidth" value="1280"/>
+	<xacro:property name="CamHeight" value="720"/>
+	<xacro:property name="CamMinDistance" value="0.01"/>
+	<xacro:property name="CamMaxDistance" value="100.0"/>
+	<xacro:property name="NoiseIntensity" value="0.000"/>
+	<xacro:property name="CamZoffset" value="0.1"/>
+	<xacro:property name="CamXoffset" value="0.25"/>
+	
+	<!-- 9. ULTRASONIC SENSORS -->
+	
+	<xacro:property name="UltraUpdateRate" value="1"/>
+	<xacro:property name="samples" value="10"/>
+	<xacro:property name="minAngle" value="-0.05"/>
+	<xacro:property name="maxAngle" value="0.05"/>
+	<xacro:property name="UltraMinRange" value="0.02"/>
+	<xacro:property name="UltraMaxRange" value="6"/>
+	<xacro:property name="UltraResolution" value="0.03"/>
+	
+</robot>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->

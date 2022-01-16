@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------- #
+# ---------------------- Self-Driving Simulator - ARAV ----------------------- #
+# ---------------------------------------------------------------------------- #
+# -------------------- Author : Alberto Ceballos Gonzalez -------------------- #
+# -------- E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr -------- #
+# --------- (c) Copyright 2021. Alberto Ceballos. All Rights Reserved -------- #
+# ---------------------------------------------------------------------------- #
+
+# ---------------------------------------------------------------------------- #
+# 										  #
+# This document contains the control parameters of the vehicle:		  #
+#										  #	
+#	1. Joint state controller						  #
+#	2. Joint motor controller						  #
+#										  #
+# ---------------------------------------------------------------------------- #
+
+# 1. Publish all joint states ------------------------------------------------ #
+
+joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+# 2. Velocity Controllers ---------------------------------------------------- #
+
+joint_motor_controller:
+    type: velocity_controllers/JointGroupVelocityController
+    joints: 
+        - rotor_rightFront_joint
+        - rotor_leftFront_joint
+        - rotor_rightRear_joint
+        - rotor_leftRear_joint
+    gains:
+        rotor_rightFront_joint: {p: 10000, i: 1, d: 1000}
+        rotor_leftFront_joint: {p: 10000, i: 1, d: 1000}
+        rotor_rightRear_joint: {p: 10000, i: 1, d: 1000}
+        rotor_leftRear_joint: {p: 10000, i: 1, d: 1000}
+        
+# ---------------------------------------------------------------------------- #
+# ---------------------- Self-Driving Simulator - ARAV ----------------------- #
+# ---------------------------------------------------------------------------- #
+# -------------------- Author : Alberto Ceballos Gonzalez -------------------- #
+# -------- E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr -------- #
+# --------- (c) Copyright 2021. Alberto Ceballos. All Rights Reserved -------- #
+# ---------------------------------------------------------------------------- #

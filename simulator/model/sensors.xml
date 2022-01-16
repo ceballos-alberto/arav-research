@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+
+<robot name="arav" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- Camera sensors -->
+
+	<xacro:macro name="camera" params="LinkName JointName CamXoffset CamYoffset CamYawAngle CamUpdateRate FOV CamWidth CamHeight CamMinDistance CamMaxDistance NoiseIntensity CamZoffset">
+	
+		<link name="${LinkName}">
+			<inertial>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+			      	<mass value="0.000001"/>
+			      	<xacro:NullInertia/>
+			</inertial>
+		</link>
+		
+		<joint name="${JointName}" type="fixed"> 
+			<parent link="GroundCore"/>
+			<child link="${LinkName}"/>
+			<axis xyz="0 0 0"/>
+			<origin xyz="${CamXoffset} ${CamYoffset} ${CamZoffset}" rpy="0 0 ${CamYawAngle}"/>
+		</joint>
+		
+		<gazebo reference = "${LinkName}">
+			<sensor type="camera" name="${LinkName}">
+				<update_rate>${CamUpdateRate}</update_rate>
+				<camera name="${LinkName}">
+					<horizontal_fov>${FOV}</horizontal_fov>
+					<image>
+						<width>${CamWidth}</width>
+				  		<height>${CamHeight}</height>
+				  		<format>R8G8B8</format>
+					</image>
+					<clip>
+						<near>${CamMinDistance}</near>
+				  		<far>${CamMaxDistance}</far>
+					</clip>
+					<noise>
+						<type>gaussian</type>
+						<mean>0.0</mean>
+						<stddev>${NoiseIntensity}</stddev>
+					</noise>
+				</camera>
+				<plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
+					<alwaysOn>true</alwaysOn>
+					<updateRate>${CamUpdateRate}</updateRate>
+					<cameraName>sensors/${LinkName}</cameraName>
+					<imageTopicName>image</imageTopicName>
+					<cameraInfoTopicName>info</cameraInfoTopicName>
+					<frameName>${LinkName}</frameName>
+				</plugin>
+			</sensor>
+		</gazebo>
+		
+	</xacro:macro>
+	
+	<xacro:camera
+		LinkName="frontRightCamera" 
+		JointName="FrontRightCamera2GroundCore" 
+		CamXoffset="${-CamXoffset}" 
+		CamYoffset="${CamDistance/2}" 
+		CamZoffset="${CamZoffset}" 
+		CamYawAngle="${degrees180}" 
+		CamUpdateRate="${CamUpdateRate}" 
+		FOV="${degrees90}" 
+		CamWidth="${CamWidth}" 
+		CamHeight="${CamHeight}"
+		CamMinDistance="${CamMinDistance}"
+		CamMaxDistance="${CamMaxDistance}"
+		NoiseIntensity="${NoiseIntensity}"
+	/>
+	
+	<xacro:camera
+		LinkName="frontLeftCamera" 
+		JointName="FrontLeftCamera2GroundCore" 
+		CamXoffset="${-CamXoffset}" 
+		CamYoffset="${-CamDistance/2}"
+		CamZoffset="${CamZoffset}" 
+		CamYawAngle="${degrees180}" 
+		CamUpdateRate="${CamUpdateRate}" 
+		FOV="${degrees90}" 
+		CamWidth="${CamWidth}" 
+		CamHeight="${CamHeight}"
+		CamMinDistance="${CamMinDistance}"
+		CamMaxDistance="${CamMaxDistance}"
+		NoiseIntensity="${NoiseIntensity}"
+	/>
+	
+<!-- END -->
+
+<!-- Ultrasonic sensors -->
+
+	<xacro:macro name="ultrasonic" params="LinkName JointName UltraXoffset UltraYoffset UltraYawAngle UltraUpdateRate samples minAngle maxAngle UltraMinRange UltraMaxRange NoiseIntensity resolution">
+	
+		<link name="${LinkName}">
+			<inertial>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+			      	<mass value="0.000001"/>
+			      	<xacro:NullInertia/>
+			</inertial>
+		</link>
+		
+		<joint name="${JointName}" type="fixed"> 
+			<parent link="GroundCore"/>
+			<child link="${LinkName}"/>
+			<axis xyz="0 0 0"/>
+			<origin xyz="${UltraXoffset} ${UltraYoffset} 0" rpy="0 0 ${UltraYawAngle}"/>
+		</joint>
+		
+		<gazebo reference = "${LinkName}">
+			<sensor type="ray" name="${LinkName}">
+				<update_rate>${UltraUpdateRate}</update_rate>
+				<visualize>true</visualize>
+				<ray>
+					<scan>
+						<horizontal>
+							<samples>${samples}</samples>
+							<resolution>1</resolution>
+							<min_angle>${minAngle}</min_angle>
+							<max_angle>${maxAngle}</max_angle>
+						</horizontal>
+					</scan>
+					<range>
+						<min>${UltraMinRange}</min>
+						<max>${UltraMaxRange}</max>
+						<resolution>${resolution}</resolution>
+					</range>
+				</ray>
+				<plugin name="ultrasonic_plugin" filename="libgazebo_ros_range.so">
+					<gaussianNoise>${NoiseIntensity}</gaussianNoise>
+					<alwaysOn>true</alwaysOn>
+					<updateRate>${UltraUpdateRate}</updateRate>
+					<topicName>sensors/${LinkName}</topicName>
+					<frameName>${LinkName}</frameName>
+					<radiation>ultrasound</radiation>
+					<fov>${maxAngle}-${minAngle}</fov>
+					<visualize>true</visualize>
+				</plugin>
+			</sensor>
+		</gazebo>
+	
+	</xacro:macro>
+
+	<xacro:ultrasonic
+		LinkName="frontUltrasonic"
+		JointName="FrontUltrasonic2GroundCore"
+		UltraXoffset="${-GroundCoreX/2}"
+		UltraYoffset="0.0"
+		UltraYawAngle="${degrees180}"
+		UltraUpdateRate="${UltraUpdateRate}"
+		samples="${samples}"
+		minAngle="${minAngle}"
+		maxAngle="${maxAngle}"
+		UltraMinRange="${UltraMinRange}"
+		UltraMaxRange="${UltraMaxRange}"
+		NoiseIntensity="${NoiseIntensity}"
+		resolution="${UltraResolution}"
+	/>
+	
+	<xacro:ultrasonic
+		LinkName="leftUltrasonic"
+		JointName="LeftUltrasonic2GroundCore"
+		UltraXoffset="${-GroundCoreX/2}"
+		UltraYoffset="${-GroundCoreY/2}"
+		UltraYawAngle="${degrees180-degrees90/3}"
+		UltraUpdateRate="${UltraUpdateRate}"
+		samples="${samples}"
+		minAngle="${minAngle}"
+		maxAngle="${maxAngle}"
+		UltraMinRange="${UltraMinRange}"
+		UltraMaxRange="${UltraMaxRange}"
+		NoiseIntensity="${NoiseIntensity}"
+		resolution="${UltraResolution}"
+	/>
+	
+	<xacro:ultrasonic
+		LinkName="rightUltrasonic"
+		JointName="RightUltrasonic2GroundCore"
+		UltraXoffset="${-GroundCoreX/2}"
+		UltraYoffset="${GroundCoreY/2}"
+		UltraYawAngle="${degrees180+degrees90/3}"
+		UltraUpdateRate="${UltraUpdateRate}"
+		samples="${samples}"
+		minAngle="${minAngle}"
+		maxAngle="${maxAngle}"
+		UltraMinRange="${UltraMinRange}"
+		UltraMaxRange="${UltraMaxRange}"
+		NoiseIntensity="${NoiseIntensity}"
+		resolution="${UltraResolution}"
+	/>
+	
+<!-- END -->
+	
+</robot>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     

@@ -1,0 +1,316 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
+<!-- ############################################################################
+
+     This document contains important macros to help with model definition:
+     	
+     	1. Inertia macros (cylinder + box)
+     	2. Frame macro
+     	3. Wheel macro
+     	4. Motor macro
+     	
+     ############################################################################ -->
+     
+<robot name = "arav" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+
+	<!-- 1. INERTIA MACROS -->
+	
+	<!-- 1.1 3D inertia tensor of a cylinder -->
+
+	<xacro:macro name = "cylinderInertia" params = "mass radius length">
+	
+		<inertia
+		
+			ixx = "${mass*(3*radius*radius+length*length)/12}"
+			ixy = "0.0"
+			ixz = "0.0"
+			iyy = "${mass*(3*radius*radius+length*length)/12}"
+			iyz = "0.0"
+			izz = "${mass*radius*radius/2}"
+			
+		/>
+		
+	</xacro:macro>
+	
+	<!-- 1.2 3D inertia tensor of a box -->
+		
+	<xacro:macro name = "boxInertia" params = "mass xDim yDim zDim">
+	
+		<inertia
+		
+			ixx = "${mass*(yDim*yDim+zDim*zDim)/12}"
+			ixy = "0.0"
+			ixz = "0.0"
+			iyy = "${mass*(xDim*xDim+zDim*zDim)/12}"
+			iyz = "0.0"
+			izz = "${mass*(xDim*xDim+yDim*yDim)/12}"
+			
+		/>
+		
+	</xacro:macro>
+	
+	<!-- 2. FRAME MACRO -->
+	
+	<xacro:macro name = "frame" params = "mass xDim yDim zDim">
+	
+		<!-- Frame = link + joint -->
+	
+		<link name = "frame_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<mass value = "${mass}"/>
+				<xacro:boxInertia mass = "${mass}" xDim = "${xDim}" yDim = "${yDim}" zDim = "${zDim}"/>
+			</inertial>
+			
+			<visual>
+				<origin xyz = "0.004 0 -0.02" rpy = "0 0 0"/>
+				<geometry>
+					<mesh filename = "package://simulator/model/meshes/frame.dae" scale = "1 1 1"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<geometry>
+					<box size = "${xDim} ${yDim} ${zDim}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "frame_joint" type = "fixed"> 
+		
+			<parent link = "base_link"/>
+			<child link = "frame_link"/>
+			<axis xyz = "0 0 0"/>
+			<origin xyz = "0 0 0" rpy = "0 0 0"/>
+			
+		</joint>
+	
+	</xacro:macro>
+	
+	<!-- 3. WHEEL MACRO -->
+	
+	<xacro:macro name = "wheel" params = "id mass radius length x y z maxEffort maxVelocity reflect">
+	
+		<!-- Wheel = axle + tire -->
+	
+		<!-- 3.1 Axle = link + joint -->
+		
+		<link name = "axle_${id}_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<mass value = "${mass/3}"/>
+				<xacro:cylinderInertia mass = "${mass/3}" radius = "${radius/2}" length = "${2*length/3}"/>
+			</inertial>
+			
+			<collision>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<geometry>
+					<cylinder radius = "${radius/2}" length = "${2*length/3}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "axle_${id}_joint" type = "fixed"> 
+		
+			<parent link = "frame_link"/>
+			<child link = "axle_${id}_link"/>
+			<axis xyz = "0 0 0"/>
+			<origin xyz = "${x} ${y} ${z}" rpy = "${degrees90} 0 0"/>
+			
+		</joint>
+	
+		<!-- 3.2 Tire = link + joint -->
+	
+		<link name = "tire_${id}_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<mass value = "${2*mass/3}"/>
+				<xacro:cylinderInertia mass = "${2*mass/3}" radius = "${radius}" length = "${length/3}"/>
+			</inertial>
+			
+			<collision>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<geometry>
+					<cylinder radius = "${radius}" length = "${length/3}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "tire_${id}_joint" type = "continuous">
+		
+			<parent link = "axle_${id}_link"/>
+			<child link = "tire_${id}_link"/>
+			<axis xyz = "0 0 1"/>
+			<origin xyz = "0 0 ${reflect*2*length/3}" rpy = "0 0 0"/>
+			<dynamics damping = "${damping}" friction = "${friction}" />
+			<limit effort = "${maxEffort}" velocity = "${maxVelocity}"/>
+			
+		</joint>
+		
+	</xacro:macro>
+	
+	<!-- 4. MOTOR MACRO -->
+
+	<xacro:macro name = "motor" params = "id mass radius length size x y z maxEffort maxVelocity reflect">
+	
+		<!-- Motor = stator + rotor + 2 propellers -->
+		
+		<!-- 4.1 Stator = link + joint -->
+		
+		<link name = "stator_${id}_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<mass value = "${mass/5}"/>
+				<xacro:cylinderInertia mass = "${mass/5}" radius = "${radius}" length = "${length/3}"/>
+			</inertial>
+			
+			<collision>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<geometry>
+					<cylinder radius = "${radius}" length = "${length/3}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "stator_${id}_joint" type = "fixed">
+		
+			<parent link = "frame_link"/>
+			<child link = "stator_${id}_link"/>
+			<axis xyz = "0 0 0"/>
+			<origin xyz = "${x} ${y} ${z}" rpy = "0 0 0"/>
+			
+		</joint>
+		
+		<!-- 4.2 Rotor = link + joint + transmission -->
+		
+		<link name = "rotor_${id}_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<mass value = "${2*mass/5}"/>
+				<xacro:cylinderInertia mass = "${2*mass/5}" radius = "${radius}" length = "${2*length/3}"/>
+			</inertial>
+			
+			<collision>
+				<origin xyz = "0 0 0" rpy = "0 0 0"/>
+				<geometry>
+					<cylinder radius = "${radius}" length = "${2*length/3}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "rotor_${id}_joint" type = "continuous">
+		
+			<parent link = "stator_${id}_link"/>
+			<child link = "rotor_${id}_link"/>
+			<axis xyz = "0 0 1"/>
+			<origin xyz = "0 0 ${2*length/3}" rpy = "0 0 0"/>
+			
+		</joint>
+		
+		<transmission name = "rotor_${id}_transmission">
+		
+			<type>transmission_interface/SimpleTransmission</type>
+			<joint name = "rotor_${id}_joint">
+				<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+			</joint>
+			<actuator name = "rotor_${id}_actuator">
+				<mechanicalReduction>1</mechanicalReduction>
+				<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+			</actuator>
+			
+		</transmission>
+		
+		<!-- 4.3 Propeller 1 = link + joint -->
+		
+		<link name = "propeller_1_${id}_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "${degrees90} 0 0"/>
+				<mass value = "${mass/5}"/>
+				<xacro:boxInertia mass = "${mass/5}" xDim = "${radius*2}" yDim = "${length/6}" zDim = "${size}"/>
+			</inertial>
+			
+			<collision>
+				<origin xyz="0 0 0" rpy="${degrees90} 0 0"/>
+				<geometry>
+					<box size="${radius*2} ${length/6} ${size}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "propeller_1_${id}_joint" type = "fixed"> 
+		
+			<parent link = "rotor_${id}_link"/>
+			<child link = "propeller_1_${id}_link"/>
+			<axis xyz = "0 0 0"/>
+			<origin xyz = "0 -${radius+5*size/8} 0" rpy = "0 0 0"/>
+			
+		</joint>
+		
+		<gazebo reference = "propeller_1_${id}_joint">
+    			<preserveFixedJoint>true</preserveFixedJoint>
+  		</gazebo>
+		
+		<!-- 4.4 Propeller 2 = link + joint -->
+		
+		<link name = "propeller_2_${id}_link">
+		
+			<inertial>
+				<origin xyz = "0 0 0" rpy = "${degrees90} 0 0"/>
+				<mass value = "${mass/5}"/>
+				<xacro:boxInertia mass = "${mass/5}" xDim = "${radius*2}" yDim = "${length/6}" zDim = "${size}"/>
+			</inertial>
+			
+			<collision>
+				<origin xyz="0 0 0" rpy="${degrees90} 0 0"/>
+				<geometry>
+					<box size="${radius*2} ${length/6} ${size}"/>
+				</geometry>
+			</collision>
+			
+		</link>
+		
+		<joint name = "propeller_2_${id}_joint" type = "fixed"> 
+		
+			<parent link = "rotor_${id}_link"/>
+			<child link = "propeller_2_${id}_link"/>
+			<axis xyz = "0 0 0"/>
+			<origin xyz = "0 ${radius+5*size/8} 0" rpy = "0 0 0"/>
+			
+		</joint>
+		
+		<gazebo reference = "propeller_2_${id}_joint">
+    			<preserveFixedJoint>true</preserveFixedJoint>
+  		</gazebo>
+		
+	</xacro:macro>
+	
+</robot>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->

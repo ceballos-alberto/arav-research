@@ -1,0 +1,98 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
+<!-- ############################################################################
+
+     This document contains plugins to simulate aerodynamics:
+     	
+     	1. Definition of an aerodynamics macro
+     	2. Implementation of blades
+     	
+     ############################################################################ -->
+
+<robot name = "arav" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+
+	<!-- 1. AERODYNAMICS MACRO -->
+	
+	<xacro:macro name = "aerodynamics" params = "id reflect x y z offset">
+	
+		<!-- 2 Propellers per rotor -->
+		
+		<!-- Propeller 1 -->
+
+		<gazebo>
+	  		<plugin name = "aerodynamics_1_${id}_plugin" filename = "libLiftDragPlugin.so">
+	  		
+	    			<link_name>propeller_1_${id}_link</link_name>				<!-- Name of the link affected by the group of lift/drag properties -->
+	    			<air_density>${air_density}</air_density> 				<!-- Density of the fluid this model is suspended in -->
+				<area>${area/2}</area> 						<!-- Surface area of the link -->
+				<a0>${a0}</a0> 							<!-- The initial "alpha" or initial angle of attack -->
+				<cla>${cla}</cla> 							<!-- The ratio of the coefficient of lift and alpha slope before stall -->
+				<cda>${cda}</cda> 							<!-- The ratio of the coefficient of drag and alpha slope before stall -->
+				<cma>${cma}</cma>							<!-- The ratio of the coefficient of momentum and alpha slope before stall -->
+				<cp>0 ${-offset} 0</cp> 						<!-- Center of pressure -->
+				<forward>${-reflect} 0 0</forward> 					<!-- 3-vector representing the forward direction of motion in the link frame (-Y AXIS) -->
+				<upward>0 0 1</upward> 						<!-- 3-vector representing the direction of lift or drag (Z AXIS) -->
+				<alpha_stall>${alpha_stall}</alpha_stall> 				<!-- Angle of attack at stall point; the peak angle of attack -->
+				<cla_stall>${cla_stall}</cla_stall> 					<!-- The ratio of coefficient of lift and alpha slope after stall -->
+				<cda_stall>${cda_stall}</cda_stall> 					<!-- The ratio of coefficient of drag and alpha slope after stall -->
+				<cma_stall>${cma_stall}</cma_stall> 
+				
+	  		</plugin>
+		</gazebo>
+		
+		<!-- Propeller 2 -->
+		
+		<gazebo>
+	  		<plugin name = "aerodynamics_2_${id}_plugin" filename = "libLiftDragPlugin.so">
+	  		
+	    			<link_name>propeller_2_${id}_link</link_name>				<!-- Name of the link affected by the group of lift/drag properties -->
+	    			<air_density>${air_density}</air_density> 				<!-- Density of the fluid this model is suspended in -->
+				<area>${area/2}</area> 							<!-- Surface area of the link -->
+				<a0>${a0}</a0> 							<!-- The initial "alpha" or initial angle of attack -->
+				<cla>${cla}</cla> 							<!-- The ratio of the coefficient of lift and alpha slope before stall -->
+				<cda>${cda}</cda> 							<!-- The ratio of the coefficient of drag and alpha slope before stall -->
+				<cma>${cma}</cma>							<!-- The ratio of the coefficient of momentum and alpha slope before stall -->
+				<cp>0 ${offset} 0</cp> 						<!-- Center of pressure. The forces due to lift and drag will be applied here (GC) -->
+				<forward>${reflect} 0 0</forward> 					<!-- 3-vector representing the forward direction of motion in the link frame (+Y AXIS) -->
+				<upward>0 0 1</upward> 						<!-- 3-vector representing the direction of lift or drag (Z AXIS) -->
+				<alpha_stall>${alpha_stall}</alpha_stall> 				<!-- Angle of attack at stall point; the peak angle of attack -->
+				<cla_stall>${cla_stall}</cla_stall> 					<!-- The ratio of coefficient of lift and alpha slope after stall -->
+				<cda_stall>${cda_stall}</cda_stall> 					<!-- The ratio of coefficient of drag and alpha slope after stall -->
+				<cma_stall>${cma_stall}</cma_stall> 
+				
+	  		</plugin>
+		</gazebo>
+	
+	</xacro:macro>
+	
+	<!-- 2. IMPLEMENTATION -->
+	
+	<xacro:aerodynamics id = "rightFront" reflect = "-1"
+	x = "${motor_x}" y = "${-motor_y}" z = "${motor_z+2*motor_length/3}" offset = "${motor_radius+5*motor_size/8}"/>
+	
+	<xacro:aerodynamics id = "leftFront" reflect = "1"
+	x = "${motor_x}" y = "${motor_y}" z = "${motor_z+2*motor_length/3}" offset = "${motor_radius+5*motor_size/8}"/>
+	
+	<xacro:aerodynamics id = "rightRear" reflect = "1"
+	x = "${-motor_x}" y = "${-motor_y}" z = "${motor_z+2*motor_length/3}" offset = "${motor_radius+5*motor_size/8}"/>
+	
+	<xacro:aerodynamics id = "leftRear" reflect = "-1"
+	x = "${-motor_x}" y = "${motor_y}" z = "${motor_z+2*motor_length/3}" offset = "${motor_radius+5*motor_size/8}"/>
+
+</robot>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->

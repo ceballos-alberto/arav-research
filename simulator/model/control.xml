@@ -1,0 +1,65 @@
+<?xml version = "1.0"?>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
+     
+<!-- ############################################################################
+
+     This document contains plugins to control the vehicle:
+     	
+     	1. Ground Module Controller
+     	2. Aerial Module Controller 
+     	
+     ############################################################################ -->
+
+<robot name = "arav" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+
+	<!-- 1. GROUND MODULE CONTROLLER -->
+
+	<gazebo>
+  		<plugin name = "skid_steer_drive_controller" filename = "libgazebo_ros_skid_steer_drive.so">
+  		
+    			<updateRate>${controller_updateRate}</updateRate>				<!-- Plugin update rate in Hz -->
+    			<robotNamespace>control/ground</robotNamespace>				<!-- Robot name --> 
+			<leftFrontJoint>tire_rightFront_joint</leftFrontJoint>			<!-- Name of left front joint -->
+			<rightFrontJoint>tire_leftFront_joint</rightFrontJoint>			<!-- Name of right front joint -->
+			<leftRearJoint>tire_rightRear_joint</leftRearJoint>				<!-- Name of left rear joint -->
+			<rightRearJoint>tire_leftRear_joint</rightRearJoint>			<!-- Name of right rear joint -->
+			<wheelSeparation>${2*(wheel_y+2*wheel_length/3)}</wheelSeparation>		<!-- The distance from the center of one wheel to the other -->
+			<wheelDiameter>${2*wheel_radius}</wheelDiameter>				<!-- Diameter of the wheels -->
+			<robotBaseFrame>base_link</robotBaseFrame>					<!-- Robot frame to calculate odometry from -->
+			<torque>${wheel_maxEffort}</torque>						<!-- Maximum torque which the wheels can produce -->
+			<broadcastTF>true</broadcastTF>						<!-- Set to true to publish transforms for the wheel links -->
+			<commandTopic>cmd</commandTopic>						<!-- Topic to receive geometry_msgs/Twist message commands -->
+			<odometryTopic>odom</odometryTopic>						<!-- Topic to publish nav_msgs/Odometry messages -->
+			<odometryFrame>odom</odometryFrame>						<!-- Odometry frame -->
+			<covariance_x>${controller_covariance}</covariance_x>			<!-- Default X covariance -->
+			<covariance_y>${controller_covariance}</covariance_y>			<!-- Default Y covariance -->
+			<covariance_yaw>${controller_covariance}</covariance_yaw>			<!-- Default Yaw covariance -->
+			
+  		</plugin>
+	</gazebo>
+
+	<!-- 2. AERIAL MODULE CONTROLLER -->
+
+	<gazebo>
+		<plugin name = "gazebo_ros_control" filename = "libgazebo_ros_control.so">
+			<robotNameSpace>/control/air</robotNameSpace>
+			<robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+		</plugin>
+	</gazebo>
+
+</robot>
+
+<!-- ############################################################################ 
+     ###################### Self-Driving Simulator - ARAV ####################### 
+     ############################################################################
+     #################### Author : Alberto Ceballos Gonzalez #################### 
+     ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ######## 
+     ######### (c) Copyright 2021. Alberto Ceballos. All Rights Reserved ########  
+     ############################################################################ -->
