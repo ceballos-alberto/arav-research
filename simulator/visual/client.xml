@@ -1,45 +1,35 @@
 <?xml version = "1.0"?>
 
 <!-- ############################################################################
-     ###################### Self-Driving Simulator - ARAV #######################
+     ###################### Gazebo Client - ARAV Simulator ######################
      ############################################################################
      #################### Author : Alberto Ceballos Gonzalez ####################
      ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ########
      ######### (c) Copyright 2022. Alberto Ceballos. All Rights Reserved ########
      ############################################################################ -->
 
-<!-- ############################################################################
+<launch>
 
-     This document contains the desciption of an external camera used to
-     visualize the simulation >> Customized Gazebo client.
+	<!-- Parameters -->
 
-     ############################################################################ -->
+	<arg name = "directory" default = "$(find simulator)"/>
+	<arg name = "robotName" default = "ARAV"/>
+	<arg name = "save" default = "false"/>
+	<arg name = "updateRate" default = "60"/>
 
-<robot name = "arav" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+	<!-- ARAV Gazebo client node -->
 
-	<xacro:camera
+	<group ns = "$(arg robotName)">
 
-		LinkName = "visualCamera"
-		JointName = "visualCamera_joint"
-		CamXoffset = "1.2"
-		CamYoffset = "0.0"
-		CamZoffset = "0.5"
-		CamRollAngle="0.20"
-		CamYawAngle = "3.15"
-		CamUpdateRate = "60"
-		FOV = "1.75"
-		CamWidth = "1920"
-		CamHeight = "1080"
-		CamMinDistance = "0.001"
-		CamMaxDistance = "100.0"
-		NoiseIntensity = "0.0"
+		<node name = "visualizer" pkg = "simulator" type = "client.py"
+			output = "screen" args="$(arg directory) $(arg save) $(arg updateRate)"/>
 
-	/>
+	</group>
 
-</robot>
+</launch>
 
 <!-- ############################################################################
-     ###################### Self-Driving Simulator - ARAV #######################
+     ###################### Gazebo Client - ARAV Simulator ######################
      ############################################################################
      #################### Author : Alberto Ceballos Gonzalez ####################
      ######## E-mail : alberto.ceballos-gonzalez@student.isae-supaero.fr ########
