@@ -18,6 +18,7 @@
      		- control
      		- aerodynamics
      		- sensors
+     		- visual (client for Gazebo)
      	2. Robot definition (frame + wheels + motors)
      	
      ############################################################################ -->
@@ -26,11 +27,12 @@
 
 	<!-- 1. INCLUDE FILES -->
 
-	<xacro:include filename="$(find simulator)/model/macros.xml"/>
-	<xacro:include filename="$(find simulator)/model/params.xml"/>
-	<xacro:include filename="$(find simulator)/model/control.xml"/>
-	<xacro:include filename="$(find simulator)/model/flight.xml"/>
-	<xacro:include filename="$(find simulator)/model/sensors.xml"/>
+	<xacro:include filename = "$(find simulator)/model/macros.xml"/>
+	<xacro:include filename = "$(find simulator)/model/params.xml"/>
+	<xacro:include filename = "$(find simulator)/model/control.xml"/>
+	<xacro:include filename = "$(find simulator)/model/flight.xml"/>
+	<xacro:include filename = "$(find simulator)/model/sensors.xml"/>
+	<xacro:include filename = "$(find simulator)/visual/visual.xml"/>
 	
 	<!-- 2. ROBOT DEFINITION -->
 	

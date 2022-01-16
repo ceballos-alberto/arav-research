@@ -12,7 +12,7 @@
 
 <!-- Camera sensors -->
 
-	<xacro:macro name="camera" params="LinkName JointName CamXoffset CamYoffset CamYawAngle CamUpdateRate FOV CamWidth CamHeight CamMinDistance CamMaxDistance NoiseIntensity CamZoffset">
+	<xacro:macro name="camera" params="LinkName JointName CamXoffset CamYoffset CamRollAngle CamYawAngle CamUpdateRate FOV CamWidth CamHeight CamMinDistance CamMaxDistance NoiseIntensity CamZoffset">
 	
 		<link name="${LinkName}">
 			<inertial>
@@ -26,7 +26,7 @@
 			<parent link="frame_link"/>
 			<child link="${LinkName}"/>
 			<axis xyz="0 0 0"/>
-			<origin xyz="${CamXoffset} ${CamYoffset} ${CamZoffset}" rpy="0 0 ${CamYawAngle}"/>
+			<origin xyz="${CamXoffset} ${CamYoffset} ${CamZoffset}" rpy="0 ${CamRollAngle} ${CamYawAngle}"/>
 		</joint>
 		
 		<gazebo reference = "${LinkName}">
@@ -68,7 +68,8 @@
 		CamXoffset="${-CamXoffset}" 
 		CamYoffset="${CamDistance/2}" 
 		CamZoffset="${CamZoffset}" 
-		CamYawAngle="${degrees180}" 
+		CamYawAngle="${degrees180}"
+		CamRollAngle="0.0"  
 		CamUpdateRate="${CamUpdateRate}" 
 		FOV="${degrees90}" 
 		CamWidth="${CamWidth}" 
@@ -84,7 +85,8 @@
 		CamXoffset="${-CamXoffset}" 
 		CamYoffset="${-CamDistance/2}"
 		CamZoffset="${CamZoffset}" 
-		CamYawAngle="${degrees180}" 
+		CamYawAngle="${degrees180}"
+		CamRollAngle="0.0" 
 		CamUpdateRate="${CamUpdateRate}" 
 		FOV="${degrees90}" 
 		CamWidth="${CamWidth}" 
