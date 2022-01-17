@@ -54,10 +54,10 @@ else:
 
 UPDATE_RATE = float (sys.argv[3]) 	# Hz #
 
-# Image Size --> Full HD 1080p #
+# Image Size --> HD 720p #
 
-WIDTH = 1920		# This line can be modified #
-HEIGHT = 1080		# This line can be modified #
+WIDTH = 1280		# This line can be modified #
+HEIGHT = 720		# This line can be modified #
 
 # Listener class definition #
 
@@ -94,7 +94,7 @@ rospy.init_node('visualizer')
 
 # ROS subscriber #
 
-sub = rospy.Subscriber(INPUT_TOPIC, Image, listener.imageCallback, queue_size = 100)
+sub = rospy.Subscriber(INPUT_TOPIC, Image, listener.imageCallback, queue_size = 1)
 rate = rospy.Rate(UPDATE_RATE)
 
 # Main loop #
@@ -106,18 +106,22 @@ while not rospy.is_shutdown():
     # Load Frame #
     frame = listener.image
 
+    # Resize Frame #
+    frame = cv2.resize(frame, (WIDTH, HEIGHT))
+
     # Display #
     cv2.imshow("ARAV Simulator", frame)
     cv2.waitKey(1)
 
     # Save #
-
     if save:
-
         cv2.imwrite(SAVE_PATH + "/output_" + str(time.time()-init_time)[:4] + "_segs.png", frame)
 
     # Wait until next iteration #
     rate.sleep ()
+
+# Close OpenCV windows #
+cv2.destroyAllWindows()
 
 """ ----------------------------------------------------------------------------
     ---------------------- Gazebo Client - ARAV Simulator ----------------------
