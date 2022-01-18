@@ -29,9 +29,9 @@
 	<!-- 1. FRAME -->
 
 	<xacro:property name = "frame_mass" value = "0.5"/>
-	<xacro:property name = "frame_xDim" value = "0.25"/>
-	<xacro:property name = "frame_yDim" value = "0.15"/>
-	<xacro:property name = "frame_zDim" value = "0.01"/>
+	<xacro:property name = "frame_xDim" value = "0.18"/>
+	<xacro:property name = "frame_yDim" value = "0.11"/>
+	<xacro:property name = "frame_zDim" value = "0.02"/>
 
 	<!-- 2. WHEELS -->
 
@@ -95,7 +95,7 @@
 	<xacro:property name="CamMinDistance" value="0.01"/>
 	<xacro:property name="CamMaxDistance" value="100.0"/>
 	<xacro:property name="NoiseIntensity" value="0.000"/>
-	<xacro:property name="CamZoffset" value="0.095"/>
+	<xacro:property name="CamZoffset" value="0.1"/>
 	<xacro:property name="CamXoffset" value="0.25"/>
 
 	<!-- 9. ULTRASONIC SENSORS -->
