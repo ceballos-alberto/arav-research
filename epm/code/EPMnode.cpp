@@ -14,6 +14,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Range.h>
 #include <std_msgs/Int16MultiArray.h>
+#include <std_msgs/Int8.h>
 #include <std_msgs/String.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
@@ -44,6 +45,7 @@ using namespace tf;
 static const std::string INPUT_TOPIC_RIGHT = "/arav/sensors/frontRightCamera/image";
 static const std::string INPUT_TOPIC_LEFT = "/arav/sensors/frontLeftCamera/image";
 static const std::string INPUT_FROM_FILTER = "/arav/EPM/AIFilterOutput";
+static const std::string STAT_TOPIC_IN = "/arav/EPM/AIFilterStatus";
 
 static const std::string INPUT_TOPIC_ULT_1 = "/arav/sensors/frontUltrasonic";
 static const std::string INPUT_TOPIC_ULT_2 = "/arav/sensors/leftUltrasonic";
@@ -55,6 +57,7 @@ static const std::string OUTPUT_TOPIC = "/arav/EPM/output/cloud";
 static const std::string OUTPUT_TOPIC_MODE = "/arav/EPM/output/mode";
 static const std::string OUTPUT_TOPIC_ULT = "/arav/EPM/output/cloudUltrasonic";
 static const std::string OUTPUT_FOR_FILTER = "/arav/EPM/AIFilterInput";
+static const std::string STAT_TOPIC_OUT = "/arav/EPM/Status";
 
 /* Image Size - (Global variables) --> HD 720p */
 
@@ -64,7 +67,7 @@ static const int HEIGHT = 720;	/* This line can be modified */
 /* Constants */
 
 static const float PI = 3.14159;
-static const int FINAL_FRAME = 5;
+static const int FINAL_FRAME = 3;
 
 /* Listener Class definition */
 
@@ -75,8 +78,17 @@ class Listener {
 		cv::Mat image;
 		std::vector<short int> boundingBoxes;
 		float range;
+		int statusAI = 0;
 
 	public:	/* Class Methods */
+
+		void statusCallback (const std_msgs::Int8::ConstPtr& msg) {
+
+			/* To be executed when a status message is received */
+
+			statusAI = msg->data;
+
+		}
 
 		void imageCallback (const sensor_msgs::ImageConstPtr& msg) {
 
@@ -130,6 +142,12 @@ class Listener {
 		float getRange () {
 
 			return range;
+
+		}
+
+		int getStatusAI () {
+
+			return statusAI;
 
 		}
 
@@ -729,6 +747,10 @@ int main (int argc, char** argv) {
 
 	}
 
+	/* Error detector */
+
+	int error = 0;
+
 	/* Script modes */
 
 	std::string MODE_SELECTOR_DISPLAY_1 (argv[2]);
@@ -858,9 +880,10 @@ int main (int argc, char** argv) {
 
 	std::vector<short int> boundingBoxes;
 
-	/* Mode message */
+	/* Mode & Status message */
 
 	std_msgs::String mode_msg;
+	std_msgs::Int8 status_msg;
 
 	/* Listener declaration and initialization */
 
@@ -885,24 +908,27 @@ int main (int argc, char** argv) {
 
 	/* ---------- INPUTS ---------- */
 
-	image_transport::Subscriber sub_right = it.subscribe (INPUT_TOPIC_RIGHT, 1, &Listener::imageCallback, &listener_right);
-	image_transport::Subscriber sub_left = it.subscribe (INPUT_TOPIC_LEFT, 1, &Listener::imageCallback, &listener_left);
-	ros::Subscriber sub_filter = nh.subscribe (INPUT_FROM_FILTER, 1, &Listener::boundingBoxCallback, &listener_left);
+	image_transport::Subscriber sub_right = it.subscribe (INPUT_TOPIC_RIGHT, 10, &Listener::imageCallback, &listener_right);
+	image_transport::Subscriber sub_left = it.subscribe (INPUT_TOPIC_LEFT, 10, &Listener::imageCallback, &listener_left);
+	ros::Subscriber sub_filter = nh.subscribe (INPUT_FROM_FILTER, 10, &Listener::boundingBoxCallback, &listener_left);
 
-	ros::Subscriber sub_ult_left = nh.subscribe (INPUT_TOPIC_ULT_2, 1, &Listener::rangeCallback, &listener_left);
-	ros::Subscriber sub_ult_right = nh.subscribe (INPUT_TOPIC_ULT_3, 1, &Listener::rangeCallback, &listener_right);
-	ros::Subscriber sub_ult_front = nh.subscribe (INPUT_TOPIC_ULT_1, 1, &Listener::rangeCallback, &listener_front);
+	ros::Subscriber sub_ult_left = nh.subscribe (INPUT_TOPIC_ULT_2, 10, &Listener::rangeCallback, &listener_left);
+	ros::Subscriber sub_ult_right = nh.subscribe (INPUT_TOPIC_ULT_3, 10, &Listener::rangeCallback, &listener_right);
+	ros::Subscriber sub_ult_front = nh.subscribe (INPUT_TOPIC_ULT_1, 10, &Listener::rangeCallback, &listener_front);
+
+	ros::Subscriber sub_stat = nh.subscribe (STAT_TOPIC_IN, 10, &Listener::statusCallback, &listener_right);
 
 	/* ---------- OUTPUTS ---------- */
 
-	image_transport::Publisher pub_image = it.advertise (OUTPUT_FOR_FILTER, 1);
+	image_transport::Publisher pub_image = it.advertise (OUTPUT_FOR_FILTER, 10);
 
 	pcl_ros::Publisher<sensor_msgs::PointCloud2> pub_cloud;
-	pub_cloud.advertise (nh, OUTPUT_TOPIC, 1);
+	pub_cloud.advertise (nh, OUTPUT_TOPIC, 10);
 	pcl_ros::Publisher<sensor_msgs::PointCloud2> pub_cloud_ult;
-	pub_cloud_ult.advertise (nh, OUTPUT_TOPIC_ULT, 1);
+	pub_cloud_ult.advertise (nh, OUTPUT_TOPIC_ULT, 10);
 
-	ros::Publisher pub_mode = nh.advertise <std_msgs::String> (OUTPUT_TOPIC_MODE, 1);
+	ros::Publisher pub_mode = nh.advertise <std_msgs::String> (OUTPUT_TOPIC_MODE, 10);
+	ros::Publisher pub_stat = nh.advertise <std_msgs::Int8> (STAT_TOPIC_OUT, 10);
 
 	/* TF Data --> reference to fixed frame */
 
@@ -925,9 +951,14 @@ int main (int argc, char** argv) {
 
 	init_time = clock ();
 
-	/* Main loop */
-
 	int currentFrame = 1;
+
+	/* Publish status --> init */
+
+	status_msg.data = 0;
+	pub_stat.publish(status_msg);
+
+	/* Main loop */
 
 	while (ros::ok ()) {
 
@@ -946,6 +977,8 @@ int main (int argc, char** argv) {
 
 		try {
 
+			error = 0;
+
 			/* Image Preprocessing */
 
 			depthMap.preProcessing (image_right, image_left, display_1, save_1, SAVE_1_PATH, init_time);
@@ -953,6 +986,15 @@ int main (int argc, char** argv) {
 			/* Send information to the AI Filter */
 
 			pub_image.publish (depthMap.getMsgForFilter());
+
+			/* Wait until the AI filter is ready */
+
+			if (listener_right.getStatusAI() < 2) {
+
+				error = 1;
+				currentFrame--;
+
+			}
 
 			/* Compute Depth Map */
 
@@ -1023,9 +1065,15 @@ int main (int argc, char** argv) {
 
 			/* Stop the node */
 
-			if (currentFrame >= FINAL_FRAME) {
+			if (currentFrame >= FINAL_FRAME && listener_right.getStatusAI() == 2) {
 
 				std::cout << "[Depth-Vision] Final Frame Processed >> Killing node" << std::endl;
+
+				/* Publish status --> Work finished */
+
+				status_msg.data = 1;
+				pub_stat.publish(status_msg);
+
 				break;
 
 			}
@@ -1040,9 +1088,13 @@ int main (int argc, char** argv) {
 
 		catch (cv::Exception& e) {
 
+			error = 1;
+
 		}
 
 		catch (pcl::IOException e) {
+
+			error = 1;
 
 		}
 
@@ -1052,7 +1104,9 @@ int main (int argc, char** argv) {
 
 		elapsed_time = (((float) (end_time - start_time))/CLOCKS_PER_SEC);
 
-		std::cout << "[Depth-Vision] Frame Processed >> Time = " << std::setprecision (3) << elapsed_time << " segs" << std::endl;
+		if (error == 0) {
+			std::cout << "[Depth-Vision] Frame Processed >> Time = " << std::setprecision (3) << elapsed_time << " segs" << std::endl;
+		}
 
 		/* Wait for a new pair of images */
 

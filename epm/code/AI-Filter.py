@@ -20,6 +20,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 from sensor_msgs.msg import Image
 from std_msgs.msg import Int16MultiArray
+from std_msgs.msg import Int8
 import cv_bridge
 import numpy as np
 import cv2
@@ -47,9 +48,11 @@ for letter in sys.argv[1]:
 
 # Topic names #
 
-INPUT_TOPIC = "/arav/EPM/AIFilterInput";
+INPUT_TOPIC = "/arav/EPM/AIFilterInput"
 
-OUTPUT_TOPIC = "/arav/EPM/AIFilterOutput";
+OUTPUT_TOPIC = "/arav/EPM/AIFilterOutput"
+
+STAT_TOPIC = "/arav/EPM/AIFilterStatus"
 
 # Script modes #
 
@@ -71,14 +74,14 @@ else:
 
 # Constants #
 
-THRESHOLD = 0.5			# This line can be modified #
-FINAL_FRAME = 10		# This line can be modified #
+THRESHOLD = 0.5			   # This line can be modified #
+FINAL_FRAME = 3		       # This line can be modified #
 UPDATE_RATE = float (sys.argv[4]) 	# Hz #
 
 # Image Size --> HD 720p #
 
-WIDTH = 1280		# This line can be modified #
-HEIGHT = 720		# This line can be modified #
+WIDTH = 1280		       # This line can be modified #
+HEIGHT = 720		       # This line can be modified #
 
 # Listener class definition #
 
@@ -103,7 +106,7 @@ class Listener:
 
 		except CvBridgeError as e:
 
-			pass
+			print ("[AI-Filter] Error while loading frame")
 
 # Listener declaration #
 
@@ -119,12 +122,20 @@ rospy.init_node('detection_model')
 
 # ROS Publishers & Subscribers #
 
-sub = rospy.Subscriber(INPUT_TOPIC, Image, listener.imageCallback, queue_size=1)		# Subscriber #
+sub = rospy.Subscriber(INPUT_TOPIC, Image, listener.imageCallback, queue_size=10)		# Subscriber #
 
-pub = rospy.Publisher(OUTPUT_TOPIC, Int16MultiArray, queue_size=1)				# Publisher #
+pub = rospy.Publisher(OUTPUT_TOPIC, Int16MultiArray, queue_size=10)				        # Publisher #
 output_msg = Int16MultiArray ()
 
+pub_stat = rospy.Publisher(STAT_TOPIC, Int8, queue_size=10)				                # Publisher #
+status_msg = Int8 ()
+
 rate = rospy.Rate(UPDATE_RATE)
+
+# Publish status --> init #
+
+status_msg.data = 0
+pub_stat.publish(status_msg)
 
 # Load detection model #
 
@@ -132,8 +143,12 @@ model = tf.saved_model.load(MODEL_PATH)
 
 print ("[AI-Filter] Inference model has been successfully loaded")
 
-init_time = time.time()
+# Publish status --> model loaded #
 
+status_msg.data = 1
+pub_stat.publish(status_msg)
+
+init_time = time.time()
 currentFrame = 1
 
 # Main loop #
@@ -161,12 +176,12 @@ while not rospy.is_shutdown():
 
 	nbCorrectResults = np.argwhere(results['detection_scores'].numpy()[0] > THRESHOLD).shape[0]
 
-	for i in range (nbCorrectResults):
+	for i in range (1):	# Change by nbCorrectResults if more than one #
 
-		BoundingBoxes.append(int(results['detection_boxes'][0][i][0]*HEIGHT))		# Bounding Box Y min
-		BoundingBoxes.append(int(results['detection_boxes'][0][i][1]*WIDTH))			# Bounding Box X min
-		BoundingBoxes.append(int(results['detection_boxes'][0][i][2]*HEIGHT))		# Bounding Box Y max
-		BoundingBoxes.append(int(results['detection_boxes'][0][i][3]*WIDTH))			# Bounding Box X max
+		BoundingBoxes.append(int(results['detection_boxes'][0][i][0]*HEIGHT))	# Bounding Box Y min #
+		BoundingBoxes.append(int(results['detection_boxes'][0][i][1]*WIDTH))		# Bounding Box X min #
+		BoundingBoxes.append(int(results['detection_boxes'][0][i][2]*HEIGHT))	# Bounding Box Y max #
+		BoundingBoxes.append(int(results['detection_boxes'][0][i][3]*WIDTH))		# Bounding Box X max #
 
 	output_msg.data = BoundingBoxes
 
@@ -177,16 +192,25 @@ while not rospy.is_shutdown():
 	# Stop the node #
 
 	if (currentFrame >= FINAL_FRAME):
+
 		print ("[AI-Filter] Final Frame Processed >> Killing node")
+
+        # Publish status --> Detection finished #
+
+		status_msg.data = 2
+		pub_stat.publish(status_msg)
+
 		break
+
 	else:
+
 		currentFrame += 1
 
 	# Display Output #
 
 	if display:
 
-		for i in range (nbCorrectResults):
+		for i in range (1):	# Change by nbCorrectResults if more than one #
 
 			cv2.rectangle (frame, (BoundingBoxes[1+4*i]-5,BoundingBoxes[2+4*i]+5), (BoundingBoxes[3+4*i]+5,BoundingBoxes[0+4*i]-5), (77, 163, 232), 3)
 
@@ -219,6 +243,10 @@ while not rospy.is_shutdown():
 	# Wait until next iteration #
 
 	rate.sleep ()
+
+# Close all OpenCV windows #
+
+cv2.destroyAllWindows()
 
 """ ----------------------------------------------------------------------------
     ---------------- Artificial Intelligence Filter (AI-Filter) ----------------

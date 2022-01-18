@@ -14,8 +14,8 @@
 
 	<arg name="EPM-DIR" default="$(find epm)"/>
 
-	<arg name="display_rectification" default="true"/>
-	<arg name="display_depthMap" default="true"/>
+	<arg name="display_rectification" default="false"/>
+	<arg name="display_depthMap" default="false"/>
 	<arg name="display_detection" default="true"/>
 	<arg name="display_depthFilter" default="true"/>
 
