@@ -15,6 +15,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
+#include <std_msgs/Float32.h>
 #include <octomap_msgs/Octomap.h>
 #include <octomap_msgs/conversions.h>
 #include <octomap_ros/conversions.h>
@@ -53,8 +54,13 @@ static const std::string INPUT_TOPIC_MAP = "/arav/octomap_binary";
 
 /* ---------- OUTPUTS --------- */
 
-static const std::string OUTPUT_TOPIC_PATH = "/arav/path_planning/output/path";
-static const std::string OUTPUT_TOPIC_VIS = "/arav/path_planning/output/visualisation";
+static const std::string OUTPUT_TOPIC_PATH_LENGTH_GROUND = "/arav/path_planning/output/path_length_ground";
+static const std::string OUTPUT_TOPIC_PATH_GROUND = "/arav/path_planning/output/path_ground";
+static const std::string OUTPUT_TOPIC_VIS_GROUND = "/arav/path_planning/output/visualisation_ground";
+
+static const std::string OUTPUT_TOPIC_PATH_LENGTH_AERIAL = "/arav/path_planning/output/path_length_aerial";
+static const std::string OUTPUT_TOPIC_PATH_AERIAL = "/arav/path_planning/output/path_aerial";
+static const std::string OUTPUT_TOPIC_VIS_AERIAL = "/arav/path_planning/output/visualisation_aerial";
 
 /* ----- GLOBAL VARIABLES ----- */
 
@@ -63,8 +69,13 @@ static bool path_computed = false;
 
 /* Definition of ROS Publishers */
 
-ros::Publisher traj_pub;
-ros::Publisher vis_pub;
+ros::Publisher len_ground_pub;
+ros::Publisher traj_ground_pub;
+ros::Publisher vis_ground_pub;
+
+ros::Publisher len_aerial_pub;
+ros::Publisher traj_aerial_pub;
+ros::Publisher vis_aerial_pub;
 
 /* Definition of Path Planning Collision Model */
 
@@ -116,8 +127,19 @@ ob::OptimizationObjectivePtr getPathLengthObjWithCostToGo(const ob::SpaceInforma
 
 /* Path Definition Function */
 
-void plan(void)
+void plan(bool ground)
 {
+	// Check whether ground or aerial path must be computed
+	double high_z_bound;
+	if (ground)
+	{
+		high_z_bound = 0.1;
+	}
+	else
+	{
+		high_z_bound = 10;
+	}
+
 	// Create the state space for path planning
 	ob::StateSpacePtr space(new ob::SE3StateSpace());
 
@@ -131,7 +153,7 @@ void plan(void)
 	bounds.setHigh(1,50);
 
 	bounds.setLow(2,0.1);
-	bounds.setHigh(2,0.1);
+	bounds.setHigh(2,high_z_bound);
 
 	space->as<ob::SE3StateSpace>()->setBounds(bounds);
 
@@ -173,10 +195,12 @@ void plan(void)
 	pdef->print(std::cout);
 
     // Attempt to solve problem in a definite amount of time
-	ob::PlannerStatus solved = planner->solve(2.5); // Time in seconds
+	ob::PlannerStatus solved = planner->solve(5); // Time in seconds
 
 
 	std::cout << "Planner time finished." << std::endl;
+
+	std_msgs::Float32 len_msg;
 
 	if (solved)
 	{
@@ -185,9 +209,11 @@ void plan(void)
 		ob::PathPtr path = pdef->getSolutionPath();
 		og::PathGeometric* pth = pdef->getSolutionPath()->as<og::PathGeometric>();
 		pth->printAsMatrix(std::cout);
-
 		trajectory_msgs::MultiDOFJointTrajectory msg;
 		trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+		
+		double length = path->length();
+		len_msg.data = length;
 
 		msg.header.stamp = ros::Time::now();
 		msg.header.frame_id = "base_link";
@@ -206,8 +232,16 @@ void plan(void)
 		marker.scale.x = 0.1; // Lines only need x scale (width)
 		marker.color.a = 1.0;
 		marker.color.r = 0.0;
-		marker.color.g = 1.0;
+		marker.color.g = 0.0;
 		marker.color.b = 0.0;
+		if (ground)
+		{
+			marker.color.g = 1.0;
+		}
+		else
+		{
+			marker.color.b = 1.0;
+		}
 		/* ---------------------------------------- */
 
 		for (std::size_t path_idx = 0; path_idx < pth->getStateCount (); path_idx++)
@@ -244,15 +278,41 @@ void plan(void)
 			/* -------------------------------------- */
 		}
 
-		// Publish resulting trajectory
-		traj_pub.publish(msg);
-
-		/* -- Publish visualisation marker -- */
-		vis_pub.publish(marker);
-		/* ----------------------------------- */
+		if (ground)
+		{
+			// Publish path length
+			len_ground_pub.publish(len_msg);
+			// Publish resulting trajectory
+			traj_ground_pub.publish(msg);
+			// Publish visualisation trajectory
+			vis_ground_pub.publish(marker);
+		}
+		else
+		{
+			// Publish path length
+			len_aerial_pub.publish(len_msg);
+			// Publish resulting trajectory
+			traj_aerial_pub.publish(msg);
+			// Publish visualisation trajectory
+			vis_aerial_pub.publish(marker);
+		}
 	}
 	else
+	{
 		std::cout << "Path planning error: No solution found" << std::endl;
+		
+		// Publish "impossible path" length
+		len_msg.data = -1;
+		if (ground)
+		{
+			len_ground_pub.publish(len_msg);
+		}
+		else
+		{
+			len_aerial_pub.publish(len_msg);
+		}
+		
+	}
 }
 
 void octomapCallback(const octomap_msgs::Octomap &msg)
@@ -271,8 +331,10 @@ void statusCallback(const std_msgs::Int8 status)
 	if ((status.data == 1) && (!path_computed) && (octomap_received))
 	{
 		path_computed = true;
-		//PLAN GROUND + AERIAL
-		plan(); //JUST TO CHECK
+		// Ground path planning
+		plan(true);
+		// Aerial path planning
+		plan(false);
 	}
 
 }
@@ -284,8 +346,14 @@ int main(int argc, char **argv)
 	ros::NodeHandle nh;
 	ros::Subscriber octree_sub = nh.subscribe(INPUT_TOPIC_MAP, 1, octomapCallback);
 	ros::Subscriber status_sub = nh.subscribe(INPUT_TOPIC_EPM_STATUS, 1, statusCallback);
-	traj_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH,10);
-	vis_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS, 0 );
+
+	len_ground_pub = nh.advertise<std_msgs::Float32>(OUTPUT_TOPIC_PATH_LENGTH_GROUND,5);
+	traj_ground_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH_GROUND,50);
+	vis_ground_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS_GROUND,5);
+
+	len_aerial_pub = nh.advertise<std_msgs::Float32>(OUTPUT_TOPIC_PATH_LENGTH_AERIAL,5);
+	traj_aerial_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH_AERIAL,50);
+	vis_aerial_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS_AERIAL,5);
 
 	std::cout << "OMPL version: " << OMPL_VERSION << std::endl;
 
