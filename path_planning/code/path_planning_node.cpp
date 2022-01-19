@@ -22,7 +22,8 @@
 #include <octomap/octomap.h>
 #include <message_filters/subscriber.h>
 #include <visualization_msgs/Marker.h>
-#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+//#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+#include <std_msgs/Float64MultiArray.h>
 
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/base/OptimizationObjective.h>
@@ -209,17 +210,19 @@ void plan(bool ground)
 		ob::PathPtr path = pdef->getSolutionPath();
 		og::PathGeometric* pth = pdef->getSolutionPath()->as<og::PathGeometric>();
 		pth->printAsMatrix(std::cout);
-		trajectory_msgs::MultiDOFJointTrajectory msg;
-		trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+		std_msgs::Float64MultiArray msg;
+		std::vector<double> point = { 0.0, 0.0, 0.0};
+		//trajectory_msgs::MultiDOFJointTrajectory msg;
+		//trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
 		
 		double length = path->length();
 		len_msg.data = length;
 
-		msg.header.stamp = ros::Time::now();
-		msg.header.frame_id = "base_link";
-		msg.joint_names.clear();
-		msg.points.clear();
-		msg.joint_names.push_back("ARAV_Robot");
+		//msg.header.stamp = ros::Time::now();
+		//msg.header.frame_id = "base_link";
+		//msg.joint_names.clear();
+		//msg.points.clear();
+		//msg.joint_names.push_back("ARAV_Robot");
 
 		/* -- Definition of visualisation marker -- */
 		visualization_msgs::Marker marker;
@@ -254,19 +257,28 @@ void plan(bool ground)
             // Extract the second component of the state and cast it to what we expect
 			const ob::SO3StateSpace::StateType *rot = se3state->as<ob::SO3StateSpace::StateType>(1);
 
-			point_msg.time_from_start.fromSec(ros::Time::now().toSec());
-			point_msg.transforms.resize(1);
+			//point_msg.time_from_start.fromSec(ros::Time::now().toSec());
+			//point_msg.transforms.resize(1);
 
-			point_msg.transforms[0].translation.x= pos->values[0];
-			point_msg.transforms[0].translation.y = pos->values[1];
-			point_msg.transforms[0].translation.z = pos->values[2];
+			//point_msg.transforms[0].translation.x= pos->values[0];
+			//point_msg.transforms[0].translation.y = pos->values[1];
+			//point_msg.transforms[0].translation.z = pos->values[2];
 
-			point_msg.transforms[0].rotation.x = rot->x;
-			point_msg.transforms[0].rotation.y = rot->y;
-			point_msg.transforms[0].rotation.z = rot->z;
-			point_msg.transforms[0].rotation.w = rot->w;
+			point[0] = -pos->values[0];
+			point[1] = pos->values[1];
+			point[2] = pos->values[2];
+			msg.data = point;		
 
-			msg.points.push_back(point_msg);
+			// Publish individual point of the path
+			if (ground) {traj_ground_pub.publish(msg);}
+			else {traj_aerial_pub.publish(msg);}
+
+			//point_msg.transforms[0].rotation.x = rot->x;
+			//point_msg.transforms[0].rotation.y = rot->y;
+			//point_msg.transforms[0].rotation.z = rot->z;
+			//point_msg.transforms[0].rotation.w = rot->w;
+
+			//msg.points.push_back(point_msg);
 
 			/* -- Creation of visualisation marker -- */
 			geometry_msgs::Point p;
@@ -282,17 +294,13 @@ void plan(bool ground)
 		{
 			// Publish path length
 			len_ground_pub.publish(len_msg);
-			// Publish resulting trajectory
-			traj_ground_pub.publish(msg);
 			// Publish visualisation trajectory
 			vis_ground_pub.publish(marker);
 		}
 		else
 		{
 			// Publish path length
-			len_aerial_pub.publish(len_msg);
-			// Publish resulting trajectory
-			traj_aerial_pub.publish(msg);
+			len_aerial_pub.publish(len_msg);	
 			// Publish visualisation trajectory
 			vis_aerial_pub.publish(marker);
 		}
@@ -348,11 +356,11 @@ int main(int argc, char **argv)
 	ros::Subscriber status_sub = nh.subscribe(INPUT_TOPIC_EPM_STATUS, 1, statusCallback);
 
 	len_ground_pub = nh.advertise<std_msgs::Float32>(OUTPUT_TOPIC_PATH_LENGTH_GROUND,5);
-	traj_ground_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH_GROUND,50);
+	traj_ground_pub = nh.advertise<std_msgs::Float64MultiArray>(OUTPUT_TOPIC_PATH_GROUND,50);
 	vis_ground_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS_GROUND,5);
 
 	len_aerial_pub = nh.advertise<std_msgs::Float32>(OUTPUT_TOPIC_PATH_LENGTH_AERIAL,5);
-	traj_aerial_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH_AERIAL,50);
+	traj_aerial_pub = nh.advertise<std_msgs::Float64MultiArray>(OUTPUT_TOPIC_PATH_AERIAL,50);
 	vis_aerial_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS_AERIAL,5);
 
 	std::cout << "OMPL version: " << OMPL_VERSION << std::endl;
@@ -361,6 +369,8 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+//std_msgs/Float64MultiArray
 
 /* ---------------------------------------------------------------------------- 
    -------------------- Path Planning Module (EPM) - ARAV --------------------- 

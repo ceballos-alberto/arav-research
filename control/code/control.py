@@ -41,7 +41,9 @@ else:
 		
 positionTopic = "/arav/gazebo/model_states"
 commandTopic = "/arav/control/ground/cmd"
-waypointTopic = "/arav/path/waypoints"
+waypointTopic = "/arav/path_planning/output/path_ground"
+#Changed to integrate with path_planning topic
+#waypointTopic = "/arav/path/waypoints" 
 
 # WayPoints #
 
