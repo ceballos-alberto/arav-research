@@ -7,6 +7,10 @@
    ----------- (c) Copyright 2022. Joan Bessa. All Rights Reserved ------------  
    ---------------------------------------------------------------------------- */
 
+//TODO pass octree resolution as an argument
+//TODO set space bounds as arguments
+//TODO pass start and end goals as arguments
+
 /* Import required libraries */
 
 #include <ros/ros.h>
@@ -59,10 +63,10 @@ ros::Publisher vis_pub;
 
 /* Definition of Path Planning Collision Model */
 
-std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(2, 2, 1));
+std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(2.5, 2.5, 2));
 fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(new octomap::OcTree(0.1)));
 fcl::CollisionObject treeObj((std::shared_ptr<fcl::CollisionGeometry>(tree)));
-fcl::CollisionObject aircraftObject(ARAV_Robot); // CHANGE TO robotObject()
+fcl::CollisionObject robotObject(ARAV_Robot);
 
 /* State Validity Checker */
 
@@ -80,10 +84,10 @@ bool isStateValid(const ob::State *state)
     // Check validity of the state as defined by pos & rot
 	fcl::Vec3f translation(pos->values[0],pos->values[1],pos->values[2]);
 	fcl::Quaternion3f rotation(rot->w, rot->x, rot->y, rot->z);
-	aircraftObject.setTransform(rotation, translation); // CHANGE TO robotObject()
+	robotObject.setTransform(rotation, translation);
 	fcl::CollisionRequest requestType(1,false,1,false);
 	fcl::CollisionResult collisionResult;
-	fcl::collide(&aircraftObject, &treeObj, requestType, collisionResult); // CHANGE TO robotObject()
+	fcl::collide(&robotObject, &treeObj, requestType, collisionResult);
 
 	return(!collisionResult.isCollision());
 }
@@ -96,7 +100,7 @@ ob::OptimizationObjectivePtr getThresholdPathLengthObj(const ob::SpaceInformatio
 	return obj;
 }
 
-/* NECESSARY?
+/* Example of optimization objective with heuristics
 ob::OptimizationObjectivePtr getPathLengthObjWithCostToGo(const ob::SpaceInformationPtr& si)
 {
 	ob::OptimizationObjectivePtr obj(new ob::PathLengthOptimizationObjective(si));
@@ -139,7 +143,7 @@ void plan(void)
 
     // Create the goal state (goal position)
 	ob::ScopedState<ob::SE3StateSpace> goal(space);
-	goal->setXYZ(-8,0,0.1);
+	goal->setXYZ(-10,0,0.1);
 	goal->as<ob::SO3StateSpace::StateType>(1)->setIdentity();
 
     // Create problem instance
@@ -164,7 +168,7 @@ void plan(void)
 	pdef->print(std::cout);
 
     // Attempt to solve problem in a definite amount of time
-	ob::PlannerStatus solved = planner->solve(1.0); // Time in seconds
+	ob::PlannerStatus solved = planner->solve(2.5); // Time in seconds
 
 
 	std::cout << "Planner time finished." << std::endl;
@@ -176,9 +180,6 @@ void plan(void)
 		ob::PathPtr path = pdef->getSolutionPath();
 		og::PathGeometric* pth = pdef->getSolutionPath()->as<og::PathGeometric>();
 		pth->printAsMatrix(std::cout);
-
-        // print the path to screen
-        // path->print(std::cout);
 
 		trajectory_msgs::MultiDOFJointTrajectory msg;
 		trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
@@ -251,28 +252,15 @@ void plan(void)
 
 void octomapCallback(const octomap_msgs::Octomap &msg)
 {
-    // Load collision OcTree from Octomap Message
-	//octomap::OcTree* temp_tree = new octomap::OcTree(0.1);
-	//octomap::AbstractOcTree* abs_tree = octomap_msgs::fullMsgToMap(msg);
-	//temp_tree = dynamic_cast<octomap::OcTree*>(abs_tree);
-
-	/*octomap::OcTree temp_tree = octomap_msgs::fullMsgToMap(msg);*/
-
-	//fcl::OcTree tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(&temp_tree));
-	
 	// convert octree to collision object
-	
 	octomap::OcTree* tree_oct = dynamic_cast<octomap::OcTree*>(octomap_msgs::msgToMap(msg));
 	fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(tree_oct));
 	fcl::CollisionObject temp((std::shared_ptr<fcl::CollisionGeometry>(tree)));
-	//fcl::CollisionObject treeObj = ((std::shared_ptr<fcl::CollisionGeometry>(tree)));
 	treeObj = temp;
 	plan();
-
 }
 
 /* Main function */
-
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "path_planning");

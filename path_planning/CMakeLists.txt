@@ -19,11 +19,7 @@ find_package(fcl REQUIRED)
 find_package (
   catkin REQUIRED COMPONENTS
   octomap_msgs
-  octomap_ros
-  
-  pcl_conversions
-  pcl_ros
-  
+  octomap_ros  
   roscpp
   std_msgs
 )
@@ -35,9 +31,7 @@ include_directories(
 	${OCTOMAP_INCLUDE_DIRS}
 	${OMPL_INCLUDE_DIRS}
 	${fcl_INCLUDE_DIRS}
-	${PCL_INCLUDE_DIRS}
 	${Boost_INCLUDE_DIR}
-	#Borrar pcl?
 )
 
 link_libraries(
@@ -52,7 +46,6 @@ add_executable (path_planning_node code/path_planning_node.cpp)
 
 target_link_libraries( path_planning_node
    ${catkin_LIBRARIES}
-   ${PCL_LIBRARIES}
    ${OCTOMAP_LIBRARIES}
    ${fcl_LIBRARIES}
    ${OMPL_LIBRARIES}
