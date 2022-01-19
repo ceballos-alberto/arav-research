@@ -14,6 +14,7 @@
 /* Import required libraries */
 
 #include <ros/ros.h>
+#include <std_msgs/Int8.h>
 #include <octomap_msgs/Octomap.h>
 #include <octomap_msgs/conversions.h>
 #include <octomap_ros/conversions.h>
@@ -21,8 +22,6 @@
 #include <message_filters/subscriber.h>
 #include <visualization_msgs/Marker.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
-#include <nav_msgs/Odometry.h>
-#include <geometry_msgs/Pose.h>
 
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/base/OptimizationObjective.h>
@@ -49,12 +48,18 @@ namespace og = ompl::geometric;
 
 /* ---------- INPUTS ---------- */
 
+static const std::string INPUT_TOPIC_EPM_STATUS = "/arav/EPM/Status";
 static const std::string INPUT_TOPIC_MAP = "/arav/octomap_binary";
 
 /* ---------- OUTPUTS --------- */
 
 static const std::string OUTPUT_TOPIC_PATH = "/arav/path_planning/output/path";
 static const std::string OUTPUT_TOPIC_VIS = "/arav/path_planning/output/visualisation";
+
+/* ----- GLOBAL VARIABLES ----- */
+
+static bool octomap_received = false;
+static bool path_computed = false;
 
 /* Definition of ROS Publishers */
 
@@ -257,17 +262,30 @@ void octomapCallback(const octomap_msgs::Octomap &msg)
 	fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(tree_oct));
 	fcl::CollisionObject temp((std::shared_ptr<fcl::CollisionGeometry>(tree)));
 	treeObj = temp;
-	plan();
+	octomap_received = true;
+}
+
+void statusCallback(const std_msgs::Int8 status)
+{
+	// function to activate path planning 
+	if ((status.data == 1) && (!path_computed) && (octomap_received))
+	{
+		path_computed = true;
+		//PLAN GROUND + AERIAL
+		plan(); //JUST TO CHECK
+	}
+
 }
 
 /* Main function */
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "path_planning");
-	ros::NodeHandle n;
-	ros::Subscriber octree_sub = n.subscribe(INPUT_TOPIC_MAP, 1, octomapCallback);
-	traj_pub = n.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH,10);
-	vis_pub = n.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS, 0 );
+	ros::NodeHandle nh;
+	ros::Subscriber octree_sub = nh.subscribe(INPUT_TOPIC_MAP, 1, octomapCallback);
+	ros::Subscriber status_sub = nh.subscribe(INPUT_TOPIC_EPM_STATUS, 1, statusCallback);
+	traj_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(OUTPUT_TOPIC_PATH,10);
+	vis_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS, 0 );
 
 	std::cout << "OMPL version: " << OMPL_VERSION << std::endl;
 
