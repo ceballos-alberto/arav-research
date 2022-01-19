@@ -45,12 +45,12 @@ namespace og = ompl::geometric;
 
 /* ---------- INPUTS ---------- */
 
-static const std::string INPUT_TOPIC_MAP = "/ARAV/octomap_binary";
+static const std::string INPUT_TOPIC_MAP = "/arav/octomap_binary";
 
 /* ---------- OUTPUTS --------- */
 
-static const std::string OUTPUT_TOPIC_PATH = "/ARAV/path_planning/output/path";
-static const std::string OUTPUT_TOPIC_VIS = "/ARAV/path_planning/output/visualisation";
+static const std::string OUTPUT_TOPIC_PATH = "/arav/path_planning/output/path";
+static const std::string OUTPUT_TOPIC_VIS = "/arav/path_planning/output/visualisation";
 
 /* Definition of ROS Publishers */
 
@@ -184,14 +184,14 @@ void plan(void)
 		trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
 
 		msg.header.stamp = ros::Time::now();
-		msg.header.frame_id = "BaseLink";
+		msg.header.frame_id = "base_link";
 		msg.joint_names.clear();
 		msg.points.clear();
 		msg.joint_names.push_back("ARAV_Robot");
 
 		/* -- Definition of visualisation marker -- */
 		visualization_msgs::Marker marker;
-		marker.header.frame_id = "BaseLink";
+		marker.header.frame_id = "base_link";
 		marker.header.stamp = ros::Time::now();
 		marker.ns = "ARAV_Path";
 		marker.id = 0;

@@ -21,8 +21,8 @@ find_package (
   octomap_msgs
   octomap_ros
   
-  pcl_conversions #ESBORRAR?
-  pcl_ros #ESBORRAR?
+  pcl_conversions
+  pcl_ros
   
   roscpp
   std_msgs
