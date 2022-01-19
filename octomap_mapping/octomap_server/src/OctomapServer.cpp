@@ -165,21 +165,21 @@ OctomapServer::OctomapServer(const ros::NodeHandle private_nh_, const ros::NodeH
   } else
     ROS_INFO("Publishing non-latched (topics are only prepared as needed, will only be re-published on map change");
 
-  m_markerPub = m_nh.advertise<visualization_msgs::MarkerArray>("occupied_cells_vis_array", 1, m_latchedTopics);
-  m_binaryMapPub = m_nh.advertise<Octomap>("octomap_binary", 1, m_latchedTopics);
-  m_fullMapPub = m_nh.advertise<Octomap>("octomap_full", 1, m_latchedTopics);
-  m_pointCloudPub = m_nh.advertise<sensor_msgs::PointCloud2>("octomap_point_cloud_centers", 1, m_latchedTopics);
-  m_mapPub = m_nh.advertise<nav_msgs::OccupancyGrid>("projected_map", 5, m_latchedTopics);
-  m_fmarkerPub = m_nh.advertise<visualization_msgs::MarkerArray>("free_cells_vis_array", 1, m_latchedTopics);
+  m_markerPub = m_nh.advertise<visualization_msgs::MarkerArray>("arav/occupied_cells_vis_array", 1, m_latchedTopics);
+  m_binaryMapPub = m_nh.advertise<Octomap>("arav/octomap_binary", 1, m_latchedTopics);
+  m_fullMapPub = m_nh.advertise<Octomap>("arav/octomap_full", 1, m_latchedTopics);
+  m_pointCloudPub = m_nh.advertise<sensor_msgs::PointCloud2>("arav/octomap_point_cloud_centers", 1, m_latchedTopics);
+  m_mapPub = m_nh.advertise<nav_msgs::OccupancyGrid>("arav/projected_map", 5, m_latchedTopics);
+  m_fmarkerPub = m_nh.advertise<visualization_msgs::MarkerArray>("arav/free_cells_vis_array", 1, m_latchedTopics);
 
   m_pointCloudSub = new message_filters::Subscriber<sensor_msgs::PointCloud2> (m_nh, "cloud_in", 5);
   m_tfPointCloudSub = new tf::MessageFilter<sensor_msgs::PointCloud2> (*m_pointCloudSub, m_tfListener, m_worldFrameId, 5);
   m_tfPointCloudSub->registerCallback(boost::bind(&OctomapServer::insertCloudCallback, this, _1));
 
-  m_octomapBinaryService = m_nh.advertiseService("octomap_binary", &OctomapServer::octomapBinarySrv, this);
-  m_octomapFullService = m_nh.advertiseService("octomap_full", &OctomapServer::octomapFullSrv, this);
-  m_clearBBXService = m_nh_private.advertiseService("clear_bbx", &OctomapServer::clearBBXSrv, this);
-  m_resetService = m_nh_private.advertiseService("reset", &OctomapServer::resetSrv, this);
+  m_octomapBinaryService = m_nh.advertiseService("arav/octomap_binary", &OctomapServer::octomapBinarySrv, this);
+  m_octomapFullService = m_nh.advertiseService("arav/octomap_full", &OctomapServer::octomapFullSrv, this);
+  m_clearBBXService = m_nh_private.advertiseService("arav/clear_bbx", &OctomapServer::clearBBXSrv, this);
+  m_resetService = m_nh_private.advertiseService("arav/reset", &OctomapServer::resetSrv, this);
 
   dynamic_reconfigure::Server<OctomapServerConfig>::CallbackType f;
   f = boost::bind(&OctomapServer::reconfigureCallback, this, _1, _2);
