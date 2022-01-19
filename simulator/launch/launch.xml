@@ -29,6 +29,7 @@
 
   <include file="$(find simulator)/visual/client.xml"/>
   <include file="$(find epm)/launch/launch.xml"/>
+  <include file="$(find octomap_server)/launch/launch.xml"/>
 
 	<!-- 2. PARAMETERS -->
 

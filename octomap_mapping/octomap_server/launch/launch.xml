@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<!-- ############################################################################
+     ###################### Self-Driving Simulator - ARAV #######################
+     ############################################################################
+     ####################### Author : Joan Bessa Sanz############################
+     ######## E-mail : joan.bessa-sanz@student.isae-supaero.fr ##################
+     ######### (c) Copyright 2022. Joan Bessa. All Rights Reserved ##############
+     ############################################################################ -->
+
+	
+<launch>
+	<node name="octomap_server" pkg="octomap_server" type="octomap_server_node">
+	<param name="resolution" value="0.1"/>
+	<!--  fixed map frame (set to 'map' if SLAM or localization running!)  -->
+	<param name="frame_id" type="string" value="base_link"/>
+	<!--  maximum range to integrate (speedup!)  -->
+	<param name="sensor_model/max_range" value="50.0"/>
+	<!--  data source to integrate (PointCloud2)  -->
+	<remap from="cloud_in" to="/arav/EPM/output/cloud"/>
+	</node>
+</launch>

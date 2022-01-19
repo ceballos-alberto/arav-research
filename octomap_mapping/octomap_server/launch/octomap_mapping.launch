@@ -14,5 +14,6 @@
 	<!--  maximum range to integrate (speedup!)  -->
 	<param name="sensor_model/max_range" value="15.0"/>
 	<!--  data source to integrate (PointCloud2)  -->
-	<remap from="cloud_in" to="/ARAV/EPM/output/cloud"/>
+	<remap from="cloud_in" to="/arav/EPM/output/cloud"/>
+	</node>
 </launch>
