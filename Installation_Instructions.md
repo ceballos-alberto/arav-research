@@ -44,7 +44,7 @@ No need to add anything if only downloading files
 
 To install you don't need the website, only need to do:
 
-`pip install --upgrade pip
+`pip install --upgrade pip`
 
 `pip install tensorflow`
 
