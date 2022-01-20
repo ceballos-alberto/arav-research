@@ -44,7 +44,8 @@ No need to add anything if only downloading files
 
 To install you don't need the website, only need to do:
 
-`pip install --upgrade pip`
+`pip install --upgrade pip
+
 `pip install tensorflow`
 
 ## Install ompl library
@@ -54,9 +55,11 @@ To install you don't need the website, only need to do:
 ## Install FCL library
 
 First install boost library
+
 `sudo apt-get install libboost-all-dev`
 
 Then install libccd
+
 `sudo apt-get install libccd-dev`
 
 Finally install the library
