@@ -80,7 +80,7 @@ ros::Publisher vis_aerial_pub;
 
 /* Definition of Path Planning Collision Model */
 
-std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(2.5, 2.5, 2));
+std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(5, 5, 2.5));
 fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(new octomap::OcTree(0.1)));
 fcl::CollisionObject treeObj((std::shared_ptr<fcl::CollisionGeometry>(tree)));
 fcl::CollisionObject robotObject(ARAV_Robot);
@@ -205,24 +205,35 @@ void plan(bool ground)
 
 	if (solved)
 	{
-		// Get the solution from path planning
+		// Get the solution from path planning with path smoothing
+		og::PathSimplifier* pathBSpline = new og::PathSimplifier(si);
+		og::PathGeometric path_smooth(dynamic_cast<const og::PathGeometric&>(*pdef->getSolutionPath()));
+		pathBSpline->smoothBSpline(path_smooth,10);
+
 		std::cout << "Found solution:" << std::endl;
+		path_smooth.printAsMatrix(std::cout);
+
+		/* UNUSED - Non-smoothed path 
 		ob::PathPtr path = pdef->getSolutionPath();
 		og::PathGeometric* pth = pdef->getSolutionPath()->as<og::PathGeometric>();
 		pth->printAsMatrix(std::cout);
+		---------------------------- */
+
 		std_msgs::Float64MultiArray msg;
 		std::vector<double> point = { 0.0, 0.0, 0.0};
-		//trajectory_msgs::MultiDOFJointTrajectory msg;
-		//trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
 		
-		double length = path->length();
+		double length = path_smooth.length();
 		len_msg.data = length;
 
-		//msg.header.stamp = ros::Time::now();
-		//msg.header.frame_id = "base_link";
-		//msg.joint_names.clear();
-		//msg.points.clear();
-		//msg.joint_names.push_back("ARAV_Robot");
+		/* UNUSED - Different type of trajectory topic
+		trajectory_msgs::MultiDOFJointTrajectory msg;
+		trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+		msg.header.stamp = ros::Time::now();
+		msg.header.frame_id = "base_link";
+		msg.joint_names.clear();
+		msg.points.clear();
+		msg.joint_names.push_back("ARAV_Robot");
+		----------------------------------------------*/
 
 		/* -- Definition of visualisation marker -- */
 		visualization_msgs::Marker marker;
@@ -247,9 +258,9 @@ void plan(bool ground)
 		}
 		/* ---------------------------------------- */
 
-		for (std::size_t path_idx = 0; path_idx < pth->getStateCount (); path_idx++)
+		for (std::size_t path_idx = 0; path_idx < path_smooth.getStateCount (); path_idx++)
 		{
-			const ob::SE3StateSpace::StateType *se3state = pth->getState(path_idx)->as<ob::SE3StateSpace::StateType>();
+			const ob::SE3StateSpace::StateType *se3state = path_smooth.getState(path_idx)->as<ob::SE3StateSpace::StateType>();
 
             // Extract the first component of the state and cast it to what we expect
 			const ob::RealVectorStateSpace::StateType *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
@@ -257,28 +268,14 @@ void plan(bool ground)
             // Extract the second component of the state and cast it to what we expect
 			const ob::SO3StateSpace::StateType *rot = se3state->as<ob::SO3StateSpace::StateType>(1);
 
-			//point_msg.time_from_start.fromSec(ros::Time::now().toSec());
-			//point_msg.transforms.resize(1);
-
-			//point_msg.transforms[0].translation.x= pos->values[0];
-			//point_msg.transforms[0].translation.y = pos->values[1];
-			//point_msg.transforms[0].translation.z = pos->values[2];
-
 			point[0] = -pos->values[0];
 			point[1] = pos->values[1];
 			point[2] = pos->values[2];
-			msg.data = point;		
+			msg.data = point;	
 
 			// Publish individual point of the path
 			if (ground) {traj_ground_pub.publish(msg);}
 			else {traj_aerial_pub.publish(msg);}
-
-			//point_msg.transforms[0].rotation.x = rot->x;
-			//point_msg.transforms[0].rotation.y = rot->y;
-			//point_msg.transforms[0].rotation.z = rot->z;
-			//point_msg.transforms[0].rotation.w = rot->w;
-
-			//msg.points.push_back(point_msg);
 
 			/* -- Creation of visualisation marker -- */
 			geometry_msgs::Point p;
@@ -288,6 +285,20 @@ void plan(bool ground)
 			p.z = pos->values[2];
 			marker.points.push_back(p);
 			/* -------------------------------------- */
+
+			/* UNUSED - Different type of trajectory topic
+			point_msg.time_from_start.fromSec(ros::Time::now().toSec());
+			point_msg.transforms.resize(1);
+			point_msg.transforms[0].translation.x= pos->values[0];
+			point_msg.transforms[0].translation.y = pos->values[1];
+			point_msg.transforms[0].translation.z = pos->values[2];
+			point_msg.transforms[0].rotation.x = rot->x;
+			point_msg.transforms[0].rotation.y = rot->y;
+			point_msg.transforms[0].rotation.z = rot->z;
+			point_msg.transforms[0].rotation.w = rot->w;
+			msg.points.push_back(point_msg);
+			----------------------------------------------*/
+
 		}
 
 		if (ground)
