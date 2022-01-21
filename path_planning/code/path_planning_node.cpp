@@ -208,7 +208,7 @@ void plan(bool ground)
 		// Get the solution from path planning with path smoothing
 		og::PathSimplifier* pathBSpline = new og::PathSimplifier(si);
 		og::PathGeometric path_smooth(dynamic_cast<const og::PathGeometric&>(*pdef->getSolutionPath()));
-		pathBSpline->smoothBSpline(path_smooth,10);
+		pathBSpline->smoothBSpline(path_smooth,4);
 
 		std::cout << "Found solution:" << std::endl;
 		path_smooth.printAsMatrix(std::cout);
