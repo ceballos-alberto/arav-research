@@ -12,10 +12,10 @@
 
 	<!-- Parameters -->
 	
-	<arg name = "gain" default = "3.0"/> 
+	<arg name = "gain" default = "5.0"/> 
 	<arg name = "margin" default = "0.2"/> 
-	<arg name = "limit" default = "5.0"/> 
-	<arg name = "velocity" default = "0.3"/>
+	<arg name = "limit" default = "1000.0"/> 
+	<arg name = "velocity" default = "0.2"/>
 	<arg name = "updateRate" default = "5"/> 
 	<arg name = "robotName" default = "arav"/>
 		

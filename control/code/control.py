@@ -36,10 +36,10 @@ if (len(sys.argv) == 8):
 else:	
 
 	# Default Values #
-	gain = 3.0
+	gain = 5.0
 	margin = 0.2
-	limit = 5.0
-	velocity = 0.3
+	limit = 1000.0
+	velocity = 0.2
 	updateRate = 5
 	
 # Topic names #
