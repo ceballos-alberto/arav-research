@@ -171,7 +171,7 @@ void plan(bool ground)
 
     // Create the goal state (goal position)
 	ob::ScopedState<ob::SE3StateSpace> goal(space);
-	goal->setXYZ(-10,0,0.1);
+	goal->setXYZ(-11,0,0.1);
 	goal->as<ob::SO3StateSpace::StateType>(1)->setIdentity();
 
     // Create problem instance
