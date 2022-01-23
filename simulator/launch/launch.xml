@@ -20,23 +20,25 @@
       2. Parameters
      	3. Initial conditions
      	4. Launch world and insert model
+     	5. Launch rviz
 
      ############################################################################ -->
 
 <launch>
 
-  <!-- 1. INCLUDE OTHER FILES -->
+	<!-- 1. INCLUDE OTHER FILES -->
 
-  <include file="$(find simulator)/visual/client.xml"/>
-  <include file="$(find epm)/launch/launch.xml"/>
-  <include file="$(find octomap_server)/launch/launch.xml"/>
-  <include file="$(find path_planning)/launch/launch.xml"/>
-  <include file="$(find control)/launch/launch.xml"/>
+	<include file="$(find simulator)/visual/client.xml"/>
+	<include file="$(find epm)/launch/launch.xml"/>
+	<include file="$(find octomap_server)/launch/launch.xml"/>
+	<include file="$(find path_planning)/launch/launch.xml"/>
+	<include file="$(find control)/launch/launch.xml"/>
+	
 	<!-- 2. PARAMETERS -->
 
 	<arg name = "robotName" default = "arav"/>
 	<arg name = "worldName" default = "depth"/>
-	<arg name = "enableGUI" default = "true"/>
+	<arg name = "enableGUI" default = "false"/>
 
 	<!-- 3. INITIAL CONDITIONS -->
 
@@ -95,6 +97,10 @@
 		"/>
 
 	</group>
+	
+	<!-- 5. LAUNCH RVIZ -->
+	
+	<node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find simulator)/rviz/config.rviz"/>
 
 </launch>
 

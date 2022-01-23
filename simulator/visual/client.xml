@@ -13,7 +13,7 @@
 	<!-- Parameters -->
 
 	<arg name = "directory" default = "$(find simulator)"/>
-	<arg name = "robotName" default = "ARAV"/>
+	<arg name = "robotName" default = "arav"/>
 	<arg name = "save" default = "false"/>
 	<arg name = "updateRate" default = "15"/>
 

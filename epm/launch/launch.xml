@@ -28,7 +28,7 @@
 	<arg name="updateRate_network" default="0.4"/>
 	<arg name="updateRate_epm" default="0.4"/>
 
-	<arg name="robotName" default="ARAV"/>
+	<arg name="robotName" default="arav"/>
 
 	<!-- ARAV Environment Perception nodes -->
 
