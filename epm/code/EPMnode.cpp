@@ -59,6 +59,10 @@ static const std::string OUTPUT_TOPIC_ULT = "/arav/EPM/output/cloudUltrasonic";
 static const std::string OUTPUT_FOR_FILTER = "/arav/EPM/AIFilterInput";
 static const std::string STAT_TOPIC_OUT = "/arav/EPM/Status";
 
+static const std::string VISUAL_DEPTH = "/arav/visual/depth";
+static const std::string VISUAL_CLOUD = "/arav/visual/cloud";
+
+
 /* Image Size - (Global variables) --> HD 720p */
 
 static const int WIDTH = 1280;	/* This line can be modified */
@@ -178,6 +182,10 @@ class DepthMap {
 		std::vector < std::vector<int> > pointCoord;
 
 		sensor_msgs::ImagePtr msgForFilter;
+		
+		sensor_msgs::ImagePtr msgForVisual1;
+		
+		sensor_msgs::ImagePtr msgForVisual2;
 
 	public:	/* Class Methods */
 
@@ -355,6 +363,8 @@ class DepthMap {
         			cv::imwrite (SAVE_PATH + "depthMap_" + std::to_string((clock()-init_time)/CLOCKS_PER_SEC).substr(0,4) + "_segs.png", depthMap_color);
 
         		}
+        		
+        		msgForVisual1 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", depthMap_color).toImageMsg();
 
 		}
 
@@ -466,6 +476,8 @@ class DepthMap {
         			cv::imwrite (SAVE_PATH + "depthFilter_" + std::to_string((clock()-init_time)/CLOCKS_PER_SEC).substr(0,4) + "_segs.png", depthMap_color);
 
         		}
+        		
+        		msgForVisual2 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", depthMap_color).toImageMsg();
 
 		}
 
@@ -709,6 +721,18 @@ class DepthMap {
 			return msgForFilter;
 
 		}
+		
+		sensor_msgs::ImagePtr getMsgForVisual1 () {
+
+			return msgForVisual1;
+
+		}
+		
+		sensor_msgs::ImagePtr getMsgForVisual2 () {
+
+			return msgForVisual2;
+
+		}
 
 };
 
@@ -921,6 +945,8 @@ int main (int argc, char** argv) {
 	/* ---------- OUTPUTS ---------- */
 
 	image_transport::Publisher pub_image = it.advertise (OUTPUT_FOR_FILTER, 10);
+	image_transport::Publisher pub_depth = it.advertise (VISUAL_DEPTH, 10);
+	image_transport::Publisher pub_filter = it.advertise (VISUAL_CLOUD, 10);
 
 	pcl_ros::Publisher<sensor_msgs::PointCloud2> pub_cloud;
 	pub_cloud.advertise (nh, OUTPUT_TOPIC, 10);
@@ -999,6 +1025,8 @@ int main (int argc, char** argv) {
 			/* Compute Depth Map */
 
 			depthMap.compute (display_2, save_2, SAVE_2_PATH, init_time);
+			
+			pub_depth.publish (depthMap.getMsgForVisual1());
 
 			/* Receive information from the AI filter */
 
@@ -1007,6 +1035,8 @@ int main (int argc, char** argv) {
 			/* AI - Filtering */
 
 			depthMap.postFiltering (boundingBoxes, display_3, save_3, SAVE_3_PATH, init_time);
+			
+			pub_filter.publish(depthMap.getMsgForVisual2());
 
 			/* Obtain latest TF data available */
 

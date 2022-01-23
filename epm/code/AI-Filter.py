@@ -54,6 +54,8 @@ OUTPUT_TOPIC = "/arav/EPM/AIFilterOutput"
 
 STAT_TOPIC = "/arav/EPM/AIFilterStatus"
 
+VISUAL_TOPIC = "/arav/visual/detection"
+
 # Script modes #
 
 if sys.argv[2] == "true":
@@ -130,6 +132,9 @@ output_msg = Int16MultiArray ()
 pub_stat = rospy.Publisher(STAT_TOPIC, Int8, queue_size=10)				                # Publisher #
 status_msg = Int8 ()
 
+pub_bridge = cv_bridge.CvBridge()
+pub_visual = rospy.Publisher(VISUAL_TOPIC, Image, queue_size=10)
+
 rate = rospy.Rate(UPDATE_RATE)
 
 # Publish status --> init #
@@ -205,6 +210,12 @@ while not rospy.is_shutdown():
 	else:
 
 		currentFrame += 1
+		
+	# Publish image #
+	
+	cv2.rectangle (frame, (BoundingBoxes[1+4*i]-5,BoundingBoxes[2+4*i]+5), (BoundingBoxes[3+4*i]+5,BoundingBoxes[0+4*i]-5), (77, 163, 232), 3)
+	visual_msg = pub_bridge.cv2_to_imgmsg (frame, "bgr8")
+	pub_visual.publish(visual_msg)
 
 	# Display Output #
 
