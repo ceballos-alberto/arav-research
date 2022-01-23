@@ -36,7 +36,7 @@
 
 	<arg name = "robotName" default = "arav"/>
 	<arg name = "worldName" default = "depth"/>
-	<arg name = "enableGUI" default = "false"/>
+	<arg name = "enableGUI" default = "true"/>
 
 	<!-- 3. INITIAL CONDITIONS -->
 

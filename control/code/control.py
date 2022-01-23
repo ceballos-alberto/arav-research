@@ -13,10 +13,15 @@
 import rospy
 import math
 import sys
+import time
 from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float64MultiArray
 from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion
+
+# Sleep 10 seconds to load gazebo #
+
+time.sleep(10)
 
 # Script configuration #
 
@@ -25,7 +30,7 @@ if (len(sys.argv) == 8):
 	gain = float(sys.argv[1])
 	margin = float(sys.argv[2])
 	limit = float(sys.argv[3])
-	velocity = -float(sys.argv[4])
+	velocity = float(sys.argv[4])
 	updateRate = float(sys.argv[5])
 
 else:	
@@ -34,7 +39,7 @@ else:
 	gain = 3.0
 	margin = 0.2
 	limit = 5.0
-	velocity = -0.3
+	velocity = 0.3
 	updateRate = 5
 	
 # Topic names #
@@ -42,8 +47,6 @@ else:
 positionTopic = "/arav/gazebo/model_states"
 commandTopic = "/arav/control/ground/cmd"
 waypointTopic = "/arav/path_planning/output/path_ground"
-#Changed to integrate with path_planning topic
-#waypointTopic = "/arav/path/waypoints" 
 
 # WayPoints #
 
@@ -86,7 +89,7 @@ class Listener:
 		
 		orientObj = msg.pose[self.index].orientation
 		orientList = [orientObj.x, orientObj.y, orientObj.z, orientObj.w]
-		self.realYaw = euler_from_quaternion (orientList)[2]
+		self.realYaw = euler_from_quaternion (orientList)[2] - math.pi
 		if self.realYaw < 0:
 			self.realYaw += 2 * math.pi
 		

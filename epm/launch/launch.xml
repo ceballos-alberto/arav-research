@@ -16,8 +16,8 @@
 
 	<arg name="display_rectification" default="false"/>
 	<arg name="display_depthMap" default="false"/>
-	<arg name="display_detection" default="true"/>
-	<arg name="display_depthFilter" default="true"/>
+	<arg name="display_detection" default="false"/>
+	<arg name="display_depthFilter" default="false"/>
 
 	<arg name="save_rectification" default="false"/>
 	<arg name="save_depthMap" default="false"/>
