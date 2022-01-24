@@ -75,7 +75,7 @@ class Listener:
 		global waypointList
 	
 		xValue = msg.data[0]
-		yValue = msg.data[1]
+		yValue = -msg.data[1]
 		
 		waypointList.append([xValue, yValue])
 

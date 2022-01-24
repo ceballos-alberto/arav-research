@@ -243,7 +243,7 @@ void plan(bool ground)
 		marker.id = 0;
 		marker.type = visualization_msgs::Marker::LINE_STRIP;
 		marker.action = visualization_msgs::Marker::ADD;
-		marker.scale.x = 0.1; // Lines only need x scale (width)
+		marker.scale.x = 0.03; // Lines only need x scale (width)
 		marker.color.a = 1.0;
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;
