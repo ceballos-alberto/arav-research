@@ -100,7 +100,8 @@
 	
 	<!-- 5. LAUNCH RVIZ -->
 	
-	<node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find simulator)/rviz/config.rviz"/>
+	<node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find simulator)/rviz/config.rviz"
+	launch-prefix="bash -c 'sleep 20; $0 $@' "/>
 
 </launch>
 

@@ -67,6 +67,8 @@ UPDATE_RATE = float (sys.argv[3]) 	# Hz #
 
 WIDTH = 1280		# This line can be modified #
 HEIGHT = 720		# This line can be modified #
+CROP1 = 81 		# This line can be modified #
+CROP2 = 144		# This line can be modified #
 
 # Listener class definition #
 
@@ -166,6 +168,8 @@ while not rospy.is_shutdown():
     frame = listener.image
     detection = listener.detection
     depth = listener.depth
+    depth = depth[CROP1:(720-CROP1), CROP2:(1280-CROP2)]
+    depth = cv2.resize(depth, (WIDTH, HEIGHT))
     cloud = listener.cloud
     status = listener.status
     compound = np.concatenate((np.concatenate((frame,detection),axis=0),np.concatenate((depth,cloud),axis=0)),axis=1)
