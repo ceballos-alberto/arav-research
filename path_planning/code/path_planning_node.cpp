@@ -80,7 +80,7 @@ ros::Publisher vis_aerial_pub;
 
 /* Definition of Path Planning Collision Model */
 
-std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(5, 5, 2.5));
+std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(3, 3, 2.5));
 fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(new octomap::OcTree(0.1)));
 fcl::CollisionObject treeObj((std::shared_ptr<fcl::CollisionGeometry>(tree)));
 fcl::CollisionObject robotObject(ARAV_Robot);
@@ -147,11 +147,11 @@ void plan(bool ground)
     // Set the bounds for the R^3 (translation) part of SE(3)
 	ob::RealVectorBounds bounds(3);
 
-	bounds.setLow(0,-50);
-	bounds.setHigh(0,50);
+	bounds.setLow(0,-20);
+	bounds.setHigh(0,20);
 
-	bounds.setLow(1,-50);
-	bounds.setHigh(1,50);
+	bounds.setLow(1,-20);
+	bounds.setHigh(1,20);
 
 	bounds.setLow(2,0.1);
 	bounds.setHigh(2,high_z_bound);
@@ -350,10 +350,10 @@ void statusCallback(const std_msgs::Int8 status)
 	if ((status.data == 1) && (!path_computed) && (octomap_received))
 	{
 		path_computed = true;
-		// Ground path planning
-		plan(true);
 		// Aerial path planning
 		plan(false);
+		// Ground path planning
+		plan(true);
 	}
 
 }

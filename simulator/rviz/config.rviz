@@ -10,7 +10,7 @@ Panels:
         - /Axes1
         - /Marker1/Namespaces1
       Splitter Ratio: 0.5
-    Tree Height: 363
+    Tree Height: 525
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -58,8 +58,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.8792207837104797
-        Min Value: -0.029307924211025238
+        Max Value: -9999
+        Min Value: 9999
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -266,7 +266,15 @@ Visualization Manager:
       Marker Topic: /arav/path_planning/output/visualisation_ground
       Name: Marker
       Namespaces:
-        ARAV_Path: true
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /arav/path_planning/output/visualisation_aerial
+      Name: Marker
+      Namespaces:
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -334,4 +342,4 @@ Window Geometry:
     collapsed: true
   Width: 1097
   X: 778
-  Y: 77
+  Y: 40
