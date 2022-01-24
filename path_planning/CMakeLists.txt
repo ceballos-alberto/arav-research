@@ -27,7 +27,6 @@ find_package (
 include_directories(
 	include 
 	${catkin_INCLUDE_DIRS}
-	${catkin_INCLUDE_DIRS}
 	${OCTOMAP_INCLUDE_DIRS}
 	${OMPL_INCLUDE_DIRS}
 	${fcl_INCLUDE_DIRS}
