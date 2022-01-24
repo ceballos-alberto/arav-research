@@ -32,6 +32,7 @@
 	<include file="$(find epm)/launch/launch.xml"/>
 	<include file="$(find octomap_server)/launch/launch.xml"/>
 	<include file="$(find path_planning)/launch/launch.xml"/>
+	<include file="$(find path_selector)/launch/launch.xml"/>
 	<include file="$(find control)/launch/launch.xml"/>
 	
 	<!-- 2. PARAMETERS -->
