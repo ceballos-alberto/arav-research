@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<!-- ############################################################################ 
+     #################### Path Selector Module - ARAV ########################### 
+     ############################################################################
+     ######################### Author : Joan Bessa Sanz ######################### 
+     ######## E-mail : joan.bessa-sanz@student.isae-supaero.fr ################## 
+     ########### (c) Copyright 2022. Joan Bessa. All Rights Reserved ############  
+     ############################################################################ -->
+
+<launch>
+	
+     <!-- Parameters -->
+	
+	<arg name = "ground_factor" default = "0.8"/> 
+	<arg name = "aerial_factor" default = "2"/> 
+
+	<!-- ARAV Path Planning node -->
+		
+	<node name="path_selector" pkg="path_selector" type="selector.py" output="screen"
+     args = "$(arg ground_factor) $(arg aerial_factor)"/>
+			
+</launch>
+	
+<!-- ############################################################################ 
+     #################### Path Selector Module - ARAV ########################### 
+     ############################################################################
+     ######################### Author : Joan Bessa Sanz ######################### 
+     ######## E-mail : joan.bessa-sanz@student.isae-supaero.fr ################## 
+     ########### (c) Copyright 2022. Joan Bessa. All Rights Reserved ############  
+     ############################################################################ -->
+     
