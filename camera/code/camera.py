@@ -1,6 +1,25 @@
+#!/usr/bin/env python3
+
+""" ---------------------------------------------------------------------------- 
+    ---------------------------- Camera Module - ARAV --------------------------
+    ----------------------------------------------------------------------------
+    ------------------------ Author : Joan Bessa Sanz -------------------------- 
+    --------------- E-mail : joan.bessa-sanz@student.isae-supaero.fr ----------- 
+    ------------- (c) Copyright 2022 Joan Bessa All Rights Reserved ------------  
+    ---------------------------------------------------------------------------- """
+    
+# Import required libraries #
+
+import rospy
 import cv2
 import datetime
 import keyboard
+
+# Init node #
+
+rospy.init_node("camera")
+
+# Main function #
 
 cam0 = cv2.VideoCapture(0)
 cam1 = cv2.VideoCapture(1)
@@ -24,3 +43,11 @@ while True:
 cam0.release()
 cam1.release()
 cv2.destroyAllWindows()
+
+""" ---------------------------------------------------------------------------- 
+    ---------------------------- Camera Module - ARAV --------------------------
+    ----------------------------------------------------------------------------
+    ------------------------ Author : Joan Bessa Sanz -------------------------- 
+    --------------- E-mail : joan.bessa-sanz@student.isae-supaero.fr ----------- 
+    ------------- (c) Copyright 2022 Joan Bessa All Rights Reserved ------------  
+    ---------------------------------------------------------------------------- """
