@@ -38,6 +38,14 @@ No need to add anything if only downloading files
 
 `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
 
+## Install OpenCV
+
+`sudo apt install python3-pip`
+
+`sudo apt install libgl1-mesa-glx ffmpeg libsm6 libxext6`
+
+`pip install opencv-contrib-python`
+
 ## Install TensorFlow
 
 [TensorFlow installation](https://www.tensorflow.org/install 'Install TensorFlow')
