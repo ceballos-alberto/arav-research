@@ -38,13 +38,27 @@ No need to add anything if only downloading files
 
 `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
 
+## Install and update pip
+
+`sudo apt install python3-pip`
+
+`pip install --upgrade pip`
+
+## Install OpenCV
+
+`sudo apt install libgl1-mesa-glx ffmpeg libsm6 libxext6`
+
+`pip install opencv-contrib-python`
+
+Additionally, for the camera module to work you must install the keyboard python module
+
+`pip install keyboard`
+
 ## Install TensorFlow
 
 [TensorFlow installation](https://www.tensorflow.org/install 'Install TensorFlow')
 
 To install you don't need the website, only need to do:
-
-`pip install --upgrade pip`
 
 `pip install tensorflow`
 
