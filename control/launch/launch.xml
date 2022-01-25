@@ -23,7 +23,7 @@
 	
 	<group ns = "$(arg robotName)">
 		
-		<node name = "PathControlModule" pkg = "control" type = "control.py" output = "screen" 
+		<node name = "PathControlModule" pkg = "control" type = "control.py" output = "screen" required="true"
 		args = "$(arg gain) $(arg margin) $(arg limit) $(arg velocity) $(arg updateRate)"/>
 		
 	</group>
