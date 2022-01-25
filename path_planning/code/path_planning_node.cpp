@@ -80,7 +80,7 @@ ros::Publisher vis_aerial_pub;
 
 /* Definition of Path Planning Collision Model */
 
-std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(3, 3, 2.5));
+std::shared_ptr<fcl::CollisionGeometry> ARAV_Robot(new fcl::Box(3.5, 3.5, 3));
 fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(new octomap::OcTree(0.1)));
 fcl::CollisionObject treeObj((std::shared_ptr<fcl::CollisionGeometry>(tree)));
 fcl::CollisionObject robotObject(ARAV_Robot);
