@@ -22,7 +22,7 @@ rospy.init_node("camera")
 # Main function #
 
 cam0 = cv2.VideoCapture(0)
-cam1 = cv2.VideoCapture(1)
+cam1 = cv2.VideoCapture(2)
 
 while True:
 	ret0, image0 = cam0.read()
