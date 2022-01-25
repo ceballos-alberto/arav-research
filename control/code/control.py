@@ -268,7 +268,8 @@ deltaY = 0.0
 angle = 0.0
 error = 0.0
 debug = True
-status = True
+status = False
+statusPrev = False
 activation = True
 
 # Init node #
@@ -324,12 +325,18 @@ while not rospy.is_shutdown() and activation:
 	
 	# Compute speed #
 	
+	statusPrev = status
+	
 	deltaX, deltaY, status = selectNextWP (waypointList, realValueX, realValueY, debug = False)
 	
 	if (status == False):
 	
 		outputMsg.linear.x = 0.0
 		outputMsg.angular.z = 0.0
+		
+		if statusPrev:
+			time.sleep(5)
+			break
 		
 	else:
 		
