@@ -17,6 +17,7 @@ import time
 from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float64MultiArray
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion
 
 # Sleep 10 seconds to load gazebo #
@@ -47,6 +48,7 @@ else:
 positionTopic = "/arav/gazebo/model_states"
 commandTopic = "/arav/control/ground/cmd"
 waypointTopic = "/arav/path_planning/output/path_ground"
+groundActivatorTopic = "/arav/path_selector/ground_activation"
 
 # WayPoints #
 
@@ -65,8 +67,18 @@ class Listener:
 		self.realYaw = 0.0
 		self.index = 0
 		self.robotName = "arav"
+		self.activation = True
 		
 	# Class methods #
+	
+	def activationCallback (self, msg):
+		
+		# To be executed when an activation signal is received #
+		
+		self.activation = msg.data
+		
+		print("[****CONTROL******] STATUS")
+		print(self.activation)
 	
 	def waypointCallback (self, msg):
 	
@@ -260,6 +272,7 @@ angle = 0.0
 error = 0.0
 debug = True
 status = True
+activation = True
 
 # Init node #
 
@@ -277,6 +290,8 @@ poseSub = rospy.Subscriber (positionTopic, ModelStates, listener.poseCallback, q
 
 waypointSub = rospy.Subscriber (waypointTopic, Float64MultiArray, listener.waypointCallback, queue_size=50)
 
+activSub = rospy.Subscriber (groundActivatorTopic, Bool, listener.activationCallback, queue_size=1)
+
 outputMsg = Twist ()
 
 outputMsg.linear.x = 0.0
@@ -288,7 +303,7 @@ outputMsg.angular.z = 0.0
 	
 # Node Main Looop #
 
-while not rospy.is_shutdown():
+while (not rospy.is_shutdown()) and activation:
 
 	# Update values #
 
@@ -317,10 +332,20 @@ while not rospy.is_shutdown():
 	# Publish message #
 	 
 	cmdPub.publish(outputMsg)
+	
+	# Update activation #
+	
+	activation = listener.activation
 
 	# Wait until next iteration #	
 	
 	rate.sleep ()
+	
+# Kill node when activation becomes false #
+
+outputMsg.linear.x = 0.0
+outputMsg.angular.z = 0.0
+cmdPub.publish(outputMsg)
 
 """ ---------------------------------------------------------------------------- 
     --------------------- Path Control Module (PCM) - ARAV ---------------------
