@@ -45,8 +45,10 @@ class Listener:
 
 		self.receivedGround = False
 		self.receivedAerial = False
-		self.activateGround = False
-		self.activateAerial = False
+		self.activateGround = Bool ()
+		self.activateGround.data = False
+		self.activateAerial = Bool ()
+		self.activateAerial.data = False
 		self.groundCost = -1.0
 		self.aerialCost = -1.0
 
