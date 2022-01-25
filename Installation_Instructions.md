@@ -46,6 +46,10 @@ No need to add anything if only downloading files
 
 `pip install opencv-contrib-python`
 
+Additionally, for the camera module to work you must install the keyboard python module
+
+`pip install keyboard`
+
 ## Install TensorFlow
 
 [TensorFlow installation](https://www.tensorflow.org/install 'Install TensorFlow')
