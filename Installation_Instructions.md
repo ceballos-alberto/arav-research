@@ -50,10 +50,6 @@ No need to add anything if only downloading files
 
 `pip install opencv-contrib-python`
 
-Additionally, for the camera module to work you must install the keyboard python module
-
-`pip install keyboard`
-
 ## Install TensorFlow
 
 [TensorFlow installation](https://www.tensorflow.org/install 'Install TensorFlow')
@@ -81,5 +77,3 @@ Finally install the library
 Follow the instructions on its README and USE VERSION 0.5
 
 [Flexible Collision Library](https://github.com/flexible-collision-library/fcl/releases 'Install FCL')
-
-If installing on Raspberry, might need to add a swap partition to be able to compile (see raspberry_partition.md)
