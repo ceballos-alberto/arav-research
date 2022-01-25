@@ -350,10 +350,10 @@ void statusCallback(const std_msgs::Int8 status)
 	if ((status.data == 1) && (!path_computed) && (octomap_received))
 	{
 		path_computed = true;
-		// Aerial path planning
-		plan(false);
 		// Ground path planning
 		plan(true);
+		// Aerial path planning
+		plan(false);
 	}
 
 }

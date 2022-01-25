@@ -67,7 +67,7 @@ class Listener:
 		self.realYaw = 0.0
 		self.index = 0
 		self.robotName = "arav"
-		self.activation = True
+		self.activation = False
 		
 	# Class methods #
 	
@@ -298,7 +298,21 @@ outputMsg.angular.x = 0.0
 outputMsg.angular.y = 0.0
 outputMsg.angular.z = 0.0
 	
-# Node Main Looop #
+# Pre Node Loop #
+
+activation = listener.activation
+
+while not rospy.is_shutdown() and not activation:
+
+	# Update activation #
+		
+	activation = listener.activation
+	
+	# Wait until next iteration #	
+	
+	rate.sleep ()
+	
+# Node Main Loop #
 
 while not rospy.is_shutdown() and activation:
 

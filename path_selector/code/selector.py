@@ -86,13 +86,13 @@ class Listener:
 		if (self.groundCost != -1) and (self.aerialCost != -1):
 			
 			if self.groundCost <= self.aerialCost:
-				self.activateGround = True
+				self.activateGround.data = True
 			else:
-				self.activateAerial = True
+				self.activateAerial.data = True
 		elif (self.aerialCost != -1):
-			self.activateAerial = True
+			self.activateAerial.data = True
 		else:
-			self.activateGround = True
+			self.activateGround.data = True
 	
 		print("Ground Path Activation = " + str(self.activateGround))
 		print("Aerial Path Activation = " + str(self.activateAerial))
