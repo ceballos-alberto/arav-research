@@ -335,7 +335,6 @@ while not rospy.is_shutdown() and activation:
 		outputMsg.angular.z = 0.0
 		
 		if statusPrev:
-			time.sleep(5)
 			break
 		
 	else:
@@ -364,6 +363,7 @@ while not rospy.is_shutdown() and activation:
 outputMsg.linear.x = 0.0
 outputMsg.angular.z = 0.0
 cmdPub.publish(outputMsg)
+time.sleep(5)
 
 """ ---------------------------------------------------------------------------- 
     --------------------- Path Control Module (PCM) - ARAV ---------------------
