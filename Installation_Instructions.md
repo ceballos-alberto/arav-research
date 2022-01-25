@@ -81,3 +81,5 @@ Finally install the library
 Follow the instructions on its README and USE VERSION 0.5
 
 [Flexible Collision Library](https://github.com/flexible-collision-library/fcl/releases 'Install FCL')
+
+If installing on Raspberry, might need to add a swap partition to be able to compile (see raspberry_partition.md)
