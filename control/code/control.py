@@ -76,9 +76,6 @@ class Listener:
 		# To be executed when an activation signal is received #
 		
 		self.activation = msg.data
-		
-		print("[****CONTROL******] STATUS")
-		print(self.activation)
 	
 	def waypointCallback (self, msg):
 	
@@ -303,7 +300,7 @@ outputMsg.angular.z = 0.0
 	
 # Node Main Looop #
 
-while (not rospy.is_shutdown()) and activation:
+while not rospy.is_shutdown() and activation:
 
 	# Update values #
 

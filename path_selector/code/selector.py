@@ -53,7 +53,7 @@ class Listener:
 		self.aerialCost = -1.0
 
 		self.groundActivatorPub = rospy.Publisher (groundActivatorTopic, Bool, queue_size=1)
-		self.aerialActivatorPub = rospy.Publisher (groundActivatorTopic, Bool, queue_size=1)
+		self.aerialActivatorPub = rospy.Publisher (aerialActivatorTopic, Bool, queue_size=1)
 
 	# Class methods #
 	
