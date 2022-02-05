@@ -67,6 +67,7 @@ static const std::string OUTPUT_TOPIC_VIS_AERIAL = "/arav/path_planning/output/v
 
 static bool octomap_received = false;
 static bool path_computed = false;
+static double min_aerial_height;
 
 /* Definition of ROS Publishers */
 
@@ -271,7 +272,10 @@ void plan(bool ground)
 			point[0] = -pos->values[0];
 			point[1] = pos->values[1];
 			point[2] = pos->values[2];
-			msg.data = point;	
+			if (!ground && point[2] < min_aerial_height)
+				point[2] = min_aerial_height;
+			
+			msg.data = point;
 
 			// Publish individual point of the path
 			if (ground) {traj_ground_pub.publish(msg);}
@@ -280,9 +284,9 @@ void plan(bool ground)
 			/* -- Creation of visualisation marker -- */
 			geometry_msgs::Point p;
 
-			p.x = pos->values[0];
-			p.y = pos->values[1];
-			p.z = pos->values[2];
+			p.x = -point[0];
+			p.y = point[1];
+			p.z = point[2];
 			marker.points.push_back(p);
 			/* -------------------------------------- */
 
@@ -375,6 +379,10 @@ int main(int argc, char **argv)
 	vis_aerial_pub = nh.advertise<visualization_msgs::Marker>(OUTPUT_TOPIC_VIS_AERIAL,5);
 
 	std::cout << "OMPL version: " << OMPL_VERSION << std::endl;
+
+	min_aerial_height = std::stod(argv[1]);
+
+	std::cout << (argv[1]) << "TOP LINE" << std::endl;
 
 	ros::spin();
 

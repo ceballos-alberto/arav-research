@@ -12,7 +12,8 @@
 		
 	<!-- ARAV Path Planning node -->
 		
-	<node name="path_planning" pkg="path_planning" type="path_planning_node" output="screen"  />
+	<node name="path_planning" pkg="path_planning" type="path_planning_node" output="screen"
+     args = "1.5"/> <!-- Arg = Minimum aerial path altitude -->
 			
 </launch>
 	
