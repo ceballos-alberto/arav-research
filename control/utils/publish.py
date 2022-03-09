@@ -12,10 +12,12 @@
 
 import rospy
 from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Bool
 
 # Topic names #
 
-waypointTopic = "/arav/path/waypoints"
+waypointTopic = "/arav/path_planning/output/path_ground"
+groundActivatorTopic = "/arav/path_selector/ground_activation"
 
 # WayPoints #
 
@@ -40,8 +42,9 @@ rate = rospy.Rate(updateRate)
 
 # Publishers #
 
-waypointPub = rospy.Publisher (waypointTopic, Float64MultiArray, queue_size=50)
+groundActivatorPub = rospy.Publisher (groundActivatorTopic, Bool, queue_size=1)
 
+waypointPub = rospy.Publisher (waypointTopic, Float64MultiArray, queue_size=50)
 outputMsg = Float64MultiArray ()
 
 # Variables #
@@ -50,6 +53,10 @@ iterator = -1
 waypoint = [0.0,0.0]
 
 # Node Main Looop #
+
+activateGround = Bool ()
+activateGround.data = True
+groundActivatorPub.publish(activateGround)
 
 while not rospy.is_shutdown() and iterator<len(waypointList):
 
