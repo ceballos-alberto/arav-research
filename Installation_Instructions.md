@@ -58,6 +58,10 @@ To install you don't need the website, only need to do:
 
 `pip install tensorflow`
 
+If there is no tensorflow version available (e.g. if you use a Raspberry Py) you may have to install from source:
+
+[TensorFlow installation from source](https://www.tensorflow.org/install/source 'Install TensorFlow from source')
+
 ## Install ompl library
 
 `sudo apt install libompl-dev`
